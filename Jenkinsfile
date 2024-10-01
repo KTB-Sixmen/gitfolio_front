@@ -1,13 +1,20 @@
 pipeline {
-  agent any
-  stages {
-    stage('repo test') {
-      steps {
-        sh 'sh \'git clone https://github.com/KTB-Sixmen/gitfolio_front.git\''
-        sh 'sh \'npm install\''
-        sh 'sh \'npm test\''
-      }
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/KTB-Sixmen/gitfolio_front.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
     }
-
-  }
 }
