@@ -35,7 +35,6 @@ jobs:
       run: |
         PR_ACTION=$(jq -r .action < $GITHUB_EVENT_PATH)
         PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
-        PR_BODY=$(jq -r .pull_request.body < $GITHUB_EVENT_PATH)
         PR_USER=$(jq -r .pull_request.user.login < $GITHUB_EVENT_PATH)
         PR_URL=$(jq -r .pull_request.html_url < $GITHUB_EVENT_PATH)
 
@@ -56,6 +55,7 @@ jobs:
     #     language: "korean" # 필수 X
     #     custom: true # 필수 X
 
+    #PR_BODY=$(jq -r .pull_request.body < $GITHUB_EVENT_PATH)
     #    PR_REVIEWER=$(jq -r .pull_request.requested_reviewers[].login < $GITHUB_EVENT_PATH | tr '\n' ', ' | sed 's/,$//')
     #sed "s|{body}|$PR_BODY|" | \
     
