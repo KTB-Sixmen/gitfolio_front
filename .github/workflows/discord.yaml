@@ -53,7 +53,6 @@ jobs:
         MESSAGE=$(echo "$MESSAGES" | jq -r --arg lang "$LANGUAGE" --arg key "$MESSAGE_KEY" '.[$lang][$key]')
         MESSAGE=$(echo $MESSAGE | \
           sed "s|{title}|$PR_TITLE|" | \
-          
           sed "s|{user}|$PR_USER|" | \
           sed "s|{reviewer}|$PR_REVIEWER|" | \
           sed "s|{url}|$PR_URL|")
