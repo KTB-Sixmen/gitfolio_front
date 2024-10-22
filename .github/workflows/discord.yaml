@@ -39,24 +39,11 @@ jobs:
         PR_USER=$(jq -r .pull_request.user.login < $GITHUB_EVENT_PATH)
         PR_URL=$(jq -r .pull_request.html_url < $GITHUB_EVENT_PATH)
 
-        PR_REVIEWER=$(jq -r '.pull_request.requested_reviewers[].login' < $GITHUB_EVENT_PATH | while read github_user; do
-          discord_id=$(echo $USER_MAPPING | jq -r ".mapping.\"$github_user\"")
-          if [ "$discord_id" != "null" ]; then
-            echo "<@$discord_id>"
-          else
-            echo "@$github_user"
-          fi
-        done | sed 's/^/• /' | tr '\n' '\n')
-
         LANGUAGE=${{ inputs.language }}
         MESSAGE_KEY="PR_${PR_ACTION^^}"
-        MESSAGE=$(echo "$MESSAGES" | jq -r --arg lang "$LANGUAGE" --arg key "$MESSAGE_KEY" '.[$lang][$key]')
-        MESSAGE=$(echo $MESSAGE | \
-          sed "s|{title}|$PR_TITLE|" | \
-          sed "s|{user}|$PR_USER|" | \
-          sed "s|{reviewer}|$PR_REVIEWER|" | \
-          sed "s|{url}|$PR_URL|")
-        MESSAGE=$(echo "$MESSAGE" | sed 's|[[:space:]]\+| |g' | sed 's|^ *||;s| *$||')
+        MESSAGE=$(echo $MESSAGES | jq -r ".${LANGUAGE}.${MESSAGE_KEY}")
+        MESSAGE=$(echo $MESSAGE | sed "s|{title}|$PR_TITLE|" | sed "s|{user}|$PR_USER|" | sed "s|{url}|$PR_URL|")
+        MESSAGE=$(echo "$MESSAGE" | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
         
         curl -X POST ${{ inputs.discord-webhook-url }} \
         -H "Content-Type: application/json" \
@@ -71,3 +58,12 @@ jobs:
 
     #    PR_REVIEWER=$(jq -r .pull_request.requested_reviewers[].login < $GITHUB_EVENT_PATH | tr '\n' ', ' | sed 's/,$//')
     #sed "s|{body}|$PR_BODY|" | \
+    
+    #PR_REVIEWER=$(jq -r '.pull_request.requested_reviewers[].login' < $GITHUB_EVENT_PATH | while read github_user; do
+    #discord_id=$(echo $USER_MAPPING | jq -r ".mapping.\"$github_user\"")
+    #if [ "$discord_id" != "null" ]; then
+    #  echo "<@$discord_id>"
+    #else
+    #  echo "@$github_user"
+    #fi
+    #done | sed 's/^/• /' | tr '\n' '\n')
