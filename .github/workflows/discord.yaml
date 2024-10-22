@@ -2,16 +2,55 @@ name: Discord Notifications
 
 on:
   pull_request: # pr - opened, reopened 이벤트 발생 시 discord 알림
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited]
     
 jobs:
   discordNotification:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Discord Github Notification
-      uses: Aleph-Kim/discord-github-notification@v1.2.1
+    - name: Checkout messages.json from user repository
+      uses: actions/checkout@v4
       with:
-        discord-webhook-url: ${{ secrets.NEXTBOT_WEBHOOK }} # secret key에 저장한 discord webhook url
-        language: "korean" # 필수 X
-        custom: true # 필수 X
+        path: custom-messages-repo
+        repository: ${{ github.repository }}
+        ref: ${{ github.ref }}
+
+    - name: Read Notification Messages
+      id: read-messages
+      shell: bash
+      run: |
+        MESSAGES=$(cat custom-messages-repo/.github/workflows/messages.json)
+        MESSAGES=$(echo $MESSAGES | jq -c . | sed 's/\\n/\\\\n/g')
+        echo "MESSAGES=$MESSAGES" >> $GITHUB_ENV
+
+    - name: Send Discord Notification for PR Events
+      shell: bash
+      run: |
+        PR_ACTION=$(jq -r .action < $GITHUB_EVENT_PATH)
+        PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
+        PR_BODY=$(jq =r .pull_request.body < $GITHUB_EVENT_PATH)
+        PR_USER=$(jq -r .pull_request.user.login < $GITHUB_EVENT_PATH)
+        PR_REVIEWER=$(jq -r .pull_request.requested_reviewers.name < $GITHUB_EVENT_PATH)
+        PR_URL=$(jq -r .pull_request.html_url < $GITHUB_EVENT_PATH)
+
+        LANGUAGE=${{ inputs.language }}
+        MESSAGE_KEY="PR_${PR_ACTION^^}"
+        MESSAGE=$(echo $MESSAGES | jq -r ".${LANGUAGE}.${MESSAGE_KEY}")
+        MESSAGE=$(echo $MESSAGE | sed "s|{title}|$PR_TITLE|" | sed "s|{body}|$PR_BODY|" | sed "s|{user}|$PR_USER|" | sed "s|{reviewer}|$PR_REVIEWER|" | sed "s|{url}|$PR_URL|")
+        MESSAGE=$(echo "$MESSAGE" | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
+        
+        curl -X POST ${{ inputs.discord-webhook-url }} \
+        -H "Content-Type: application/json" \
+        -d "{\"content\": \"${MESSAGE}\"}"
+
+    # - name: Discord Github Notification
+    #   uses: Aleph-Kim/discord-github-notification@v1.2.1
+    #   with:
+    #     discord-webhook-url: ${{ secrets.NEXTBOT_WEBHOOK }} # secret key에 저장한 discord webhook url
+    #     language: "korean" # 필수 X
+    #     custom: true # 필수 X
