@@ -30,8 +30,6 @@ jobs:
 
     - name: Send Discord Notification for PR Events
       shell: bash
-      env:
-        USER_MAPPING: ${{ secrets.DISCORD_GITHUB_MAPPING }}
       run: |
         PR_ACTION=$(jq -r .action < $GITHUB_EVENT_PATH)
         PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
