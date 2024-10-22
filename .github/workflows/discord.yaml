@@ -31,7 +31,7 @@ jobs:
     - name: Send Discord Notification for PR Events
       shell: bash
       run: |
-        PR_ACTION=$(jq -r .action < $GITHUB_EVENT_PATH)
+        PR_ACTION=$(jq -r .pull_request.action < $GITHUB_EVENT_PATH)
         PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
         PR_USER=$(jq -r .pull_request.user.login < $GITHUB_EVENT_PATH)
         PR_URL=$(jq -r .pull_request.html_url < $GITHUB_EVENT_PATH)
