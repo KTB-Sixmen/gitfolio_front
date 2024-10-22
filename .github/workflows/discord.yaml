@@ -51,7 +51,7 @@ jobs:
         LANGUAGE=${{ inputs.language }}
         MESSAGE_KEY="PR_${PR_ACTION^^}"
         MESSAGE=$(echo "$MESSAGES" | jq -r --arg lang "$LANGUAGE" --arg key "$MESSAGE_KEY" '.[$lang][$key]')
-        MESSAGE=$(echo $MESSAGE | sed "s|{title}|$PR_TITLE|" | sed "s|{body}|$PR_BODY|" | sed "s|{user}|$PR_USER|" | sed "s|{reviewer}|$PR_REVIEWER|" | sed "s|{url}|$PR_URL|")
+        MESSAGE=$(echo $MESSAGE | sed "s/{title}/$PR_TITLE/" | sed "s/'{body}/$PR_BODY/" | sed "s/{user}/$PR_USER/" | sed "s/{reviewer}/$PR_REVIEWER/" | sed "s/{url}/$PR_URL/")
         MESSAGE=$(echo "$MESSAGE" | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
         
         curl -X POST ${{ inputs.discord-webhook-url }} \
