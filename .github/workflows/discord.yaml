@@ -31,10 +31,10 @@ jobs:
     - name: Send Discord Notification for PR Events
       shell: bash
       run: |
-        PR_ACTION=$(jq -r .action < $GITHUB_EVENT_PATH)
-        PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
-        PR_USER=$(jq -r .pull_request.user.login < $GITHUB_EVENT_PATH)
-        PR_URL=$(jq -r .pull_request.html_url < $GITHUB_EVENT_PATH)
+        PR_ACTION=$(jq -r github.event.pull_request.action < $GITHUB_EVENT_PATH)
+        PR_TITLE=$(jq -r github.event.pull_request.pull_request.title < $GITHUB_EVENT_PATH)
+        PR_USER=$(jq -r github.event.pull_request.pull_request.user.login < $GITHUB_EVENT_PATH)
+        PR_URL=$(jq -r github.event.pull_request.pull_request.html_url < $GITHUB_EVENT_PATH)
         LANGUAGE=${{ inputs.language }}
         MESSAGE_KEY="PR_${PR_ACTION^^}"
         MESSAGE=$(echo $MESSAGES | jq -r ".$LANGUAGE.$MESSAGE_KEY")
