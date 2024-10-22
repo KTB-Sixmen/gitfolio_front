@@ -37,9 +37,9 @@ jobs:
         PR_URL=$(jq -r .pull_request.html_url < $GITHUB_EVENT_PATH)
         LANGUAGE=${{ inputs.language }}
         MESSAGE_KEY="PR_${PR_ACTION^^}"
-        MESSAGE=$(jq -r ".$LANGUAGE.$MESSAGE_KEY" <<< "$MESSAGES")
-        MESSAGE=$(sed "s|{title}|$PR_TITLE|" | sed "s|{user}|$PR_USER|" | sed "s|{url}|$PR_URL|" <<< "$MESSAGE")
-        MESSAGE=$(sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//' <<< "$MESSAGE")
+        MESSAGE=$(echo $MESSAGES | jq -r ".$LANGUAGE.$MESSAGE_KEY")
+        MESSAGE=$(echo $MESSAGE | sed "s|{title}|$PR_TITLE|g" | sed "s|{user}|$PR_USER|g" | sed "s|{url}|$PR_URL|g")
+        MESSAGE=$(echo $MESSAGE | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//g')
         curl -X POST ${{ inputs.discord-webhook-url }} \
         -H "Content-Type: application/json" \
         -d "{\"content\": \"$MESSAGE\"}"
