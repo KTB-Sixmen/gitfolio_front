@@ -40,17 +40,17 @@ jobs:
         PR_URL=$(jq -r .pull_request.html_url < $GITHUB_EVENT_PATH)
 
         PR_REVIEWER=$(jq -r '.pull_request.requested_reviewers[].login' < $GITHUB_EVENT_PATH | while read github_user; do
-          discord_id=$(echo $USER_MAPPING | jq -r ".discord-github-mapping.\"${github_user}\"")
+          discord_id=$(echo $USER_MAPPING | jq -r ".mapping.\"$github_user\"")
           if [ "$discord_id" != "null" ]; then
-            echo "<@${discord_id}>"
+            echo "<@$discord_id>"
           else
-            echo "@${github_user}"
+            echo "@$github_user"
           fi
         done | sed 's/^/• /' | tr '\n' '\n')
 
         LANGUAGE=${{ inputs.language }}
         MESSAGE_KEY="PR_${PR_ACTION^^}"
-        MESSAGE=$(echo $MESSAGES | jq -r ".${LANGUAGE}.${MESSAGE_KEY}")
+        MESSAGE=$(echo $MESSAGES | jq -r ".$LANGUAGE.$MESSAGE_KEY")
         MESSAGE=$(echo $MESSAGE | sed "s|{title}|$PR_TITLE|" | sed "s|{body}|$PR_BODY|" | sed "s|{user}|$PR_USER|" | sed "s|{reviewer}|$PR_REVIEWER|" | sed "s|{url}|$PR_URL|")
         MESSAGE=$(echo "$MESSAGE" | sed 's/[[:space:]]\+/ /g' | sed 's/^ *//;s/ *$//')
         
