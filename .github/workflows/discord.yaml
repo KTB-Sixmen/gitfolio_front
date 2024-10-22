@@ -48,7 +48,8 @@ jobs:
           fi
         done | sed 's/^/• /' | tr '\n' '\n')
 
-        echo $MESSAGES | jq -r ".${LANGUAGE}.${MESSAGE_KEY}"
+        DEBUG=$(echo $MESSAGES | jq -r ".${LANGUAGE}.${MESSAGE_KEY}")
+        echo DEBUG
 
         LANGUAGE=${{ inputs.language }}
         MESSAGE_KEY="PR_${PR_ACTION^^}"
