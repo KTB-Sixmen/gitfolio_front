@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import GITHUB_WHITE_LOGO from "../../public/images/github-mark-white.png";
-import LANDING_IMAGE from "../../public/images/langing-image.png";
-import GITFOLIO_LOGO from "../../public/images/gitfolio-logo.png";
+import GITHUB_WHITE_LOGO from "../../../../public/images/github-mark-white.png";
+import LANDING_IMAGE from "../../../../public/images/langing-image.png";
+import GITFOLIO_LOGO from "../../../../public/images/gitfolio-logo.png";
 import Image from "next/image";
+import { Button } from "@/shared/ui/button";
 
-export default function Home() {
+export function LandingPage() {
   const handleGithubLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
   };
