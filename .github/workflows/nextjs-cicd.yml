@@ -3,77 +3,91 @@ name: Next.js CI/CD Pipeline
 on:
   push:
     branches:
-      - develop    # dev 브랜치에 푸시될 때 실행
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code    # 소스 코드 체크아웃
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js    # Node.js 설정
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.4'    # Next.js 버전 맞춰줌
-          cache: 'npm'    # 패키지 캐싱으로 빌드 속도 향상
+          node-version: '20.4'
+          cache: 'npm'
 
-      - name: Install dependencies    # 의존성 설치
-        run: npm ci    # clean install, package-lock.json 기반 설치
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build Next.js app    # Next.js 앱 빌드
+      - name: Build Next.js app
         run: npm run build
-        env:    # 빌드 시 필요한 환경변수들
+        env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_S3_URL: ${{ secrets.NEXT_PUBLIC_S3_URL }}
-          # 필요한 다른 환경변수들 추가
-      - name: Set up Docker Buildx    # Docker Buildx 설정
+          NODE_ENV: 'production'  # 직접 명시
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Docker Hub    # Docker Hub 로그인
+      - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Build and Push Docker Image    # Docker 이미지 빌드 및 푸시
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64    # EC2 호환성을 위한 플랫폼 지정
+          platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}:dev    # 레포지토리이름 환경변수로 바꿈
+          tags: ${{ secrets.DOCKER_REPO }}:dev
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
+            NODE_ENV=production  # 직접 명시
 
   deploy:
-    needs: build    # build 작업 완료 후 실행 #
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: SSH 연결 테스트
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > private_key
-          chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'echo SSH 연결 성공'
-      - name: Deploy to EC2
-        # **변경된 부분: `appleboy/ssh-action@v0.1.4`에서 `@master`로 변경**
-        uses: appleboy/ssh-action@master
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            # 최신 이미지 풀
-            docker pull ${{ secrets.DOCKER_REPO }}:dev # 레포지토리이름 환경변수로 바꿈
-            
-            # 기존 컨테이너 중지 및 제거
-            docker stop nextjs-frontend || true
-            docker rm nextjs-frontend || true
-            
-            # 새 컨테이너 실행
-            sudo docker run -d \
-              --name nextjs-frontend \
-              -p 3000:3000 \
-              -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
-              -e NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
-            ${{ secrets.DOCKER_REPO }}:dev
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Get Instance ID
+        id: get-instance-id
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=Gitfolio Frontend" \
+            --query "Reservations[*].Instances[*].InstanceId" \
+            --output text)
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+
+      - name: Install Session Manager Plugin
+        run: |
+          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+          sudo dpkg -i session-manager-plugin.deb
+
+      - name: Deploy using SSM Session
+        run: |
+          aws ssm start-session \
+            --target "${{ steps.get-instance-id.outputs.instance_id }}" \
+            --document-name AWS-StartInteractiveCommand \
+            --parameters command="sudo -i && \
+              docker pull ${{ secrets.DOCKER_REPO }}:dev && \
+              docker stop nextjs-frontend || true && \
+              docker rm nextjs-frontend || true && \
+              docker run -d \
+                --name nextjs-frontend \
+                -p 3000:3000 \
+                -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+                -e NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
+                -e NODE_ENV=production \
+                ${{ secrets.DOCKER_REPO }}:dev"
