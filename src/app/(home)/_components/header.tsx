@@ -13,6 +13,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Bell } from "lucide-react";
+import NotificationPopover from "./notification-popover";
 
 export default function Header() {
   const { mutate } = useLogout();
@@ -44,7 +46,7 @@ export default function Header() {
                   채팅
                 </Link>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent className="text-base">
                 <p>준비중입니다!</p>
               </TooltipContent>
             </Tooltip>
@@ -53,20 +55,13 @@ export default function Header() {
             <button className="font-semibold hover:underline">채팅</button>
           </Link> */}
         </div>
-        <div className="flex items-center gap-4 ">
+        <div className="flex items-center gap-6 ">
+          <NotificationPopover />
           <HeaderPopover
             avatarUrl={userProfile?.result.avatarUrl as string}
             nickname={userProfile?.result.nickname!}
             credit={1000}
           />
-          {/* <button
-            className="font-semibold hover:underline"
-            onClick={() => {
-              mutate();
-            }}
-          >
-            로그아웃
-          </button> */}
         </div>
       </div>
     </header>

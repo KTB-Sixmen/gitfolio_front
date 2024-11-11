@@ -12,6 +12,7 @@ interface MyResume {
   likeCount: number;
   liked: boolean;
   isLiked: boolean;
+  updatedAt: string;
 }
 interface MyResumeResponse {
   time: string;

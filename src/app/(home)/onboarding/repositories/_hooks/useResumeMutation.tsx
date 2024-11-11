@@ -17,7 +17,7 @@ export function useResumeMutation() {
   return useMutation({
     mutationKey: ["createResume"],
     mutationFn: async ({ accessToken, data }: OnboardingRequest) => {
-      console.log(data);
+      // console.log(data);
       const promise = fetch(`/api/resumes`, {
         method: "POST",
         headers: {
@@ -37,23 +37,28 @@ export function useResumeMutation() {
 
       // const promise = () =>
       //   new Promise((resolve) =>
-      //     setTimeout(() => resolve({ name: "Sonner" }), 20000)
+      //     setTimeout(
+      //       () => resolve({ resumeId: "67297a9eb654bc508be40d3d" }),
+      //       2000,
+      //     ),
       //   );
       router.push("/community");
 
       return toast.promise(promise, {
         loading: "이력서 생성 중...",
-        success: (
-          <div className="flex justify-between items-center w-full">
-            <div>이력서 등록에 성공하였습니다.</div>
-            <button
-              onClick={() => router.push("/myResume")}
-              className="ml-4 px-2 py-1 border hover:bg-green-200 border-green-500 text-green-700 rounded-lg"
-            >
-              보러가기
-            </button>
-          </div>
-        ),
+        success: (success: any) => {
+          return (
+            <div className="flex justify-between items-center w-full">
+              <div>이력서 등록에 성공하였습니다.</div>
+              <button
+                onClick={() => router.push(`/myResume/${success.resumeId}`)}
+                className="ml-4 px-2 py-1 border hover:bg-green-200 border-green-500 text-green-700 rounded-lg"
+              >
+                보러가기
+              </button>
+            </div>
+          );
+        },
         // error: (error) => error.message || "이력서 등록에 실패했습니다.",
         error: (error) => {
           // router.push("/onboarding/repositories");

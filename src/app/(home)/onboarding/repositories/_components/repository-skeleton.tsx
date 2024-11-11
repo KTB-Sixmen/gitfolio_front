@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function RepositorySkeleton() {
   return (
     <div className="flex flex-col items-center justify-center w-1/2 h-full p-4 my-auto space-y-4">
+      레파지토리를 불러오는 중입니다...
       <Card className="w-full">
         <CardHeader>
           <Skeleton className="w-1/2 h-6 mb-2" />

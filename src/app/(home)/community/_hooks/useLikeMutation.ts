@@ -1,17 +1,6 @@
-import { useAuthStore } from '@/app/store/useAuthStore';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { ResumeFilter } from './useResumeQuery';
-
-const addProduct = (resumeId: string, accessToken: string) => {
-  return fetch(`/api/resumes/${resumeId}/likes`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    credentials: 'include',
-  });
-};
+import { useAuthStore } from "@/app/store/useAuthStore";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ResumeFilter } from "./useResumeQuery";
 
 export function useLikeMutation(
   page: number,
@@ -22,40 +11,39 @@ export function useLikeMutation(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['likes'],
+    mutationKey: ["likes"],
+    retry: 0,
     mutationFn: async (resumeId: string) => {
-      console.log('mutation');
       const response = await fetch(`/api/resumes/${resumeId}/likes`, {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-        credentials: 'include',
+        credentials: "include",
       });
       if (!response.ok) {
         const errorData = await response.json();
         throw {
           status: response.status,
-          message: errorData.message ?? '에러가 발생했습니다.',
+          message: errorData.message ?? "에러가 발생했습니다.",
         };
       }
 
       return response.json();
     },
     onMutate: async (resumeId) => {
-      console.log('mutate');
       await queryClient.cancelQueries({
-        queryKey: ['resume', page, size, filters],
+        queryKey: ["resume", page, size, filters],
       });
+
       const previousResumes = queryClient.getQueryData([
-        'resume',
+        "resume",
         page,
         size,
         filters,
       ]);
-      console.log(previousResumes);
 
-      queryClient.setQueryData(['resumes', page, size, filters], (old: any) => {
+      queryClient.setQueryData(["resume", page, size, filters], (old: any) => {
         return {
           ...old,
           result: {
@@ -68,7 +56,6 @@ export function useLikeMutation(
           },
         };
       });
-      console.log('setQuerydat');
 
       return { previousResumes };
     },
@@ -76,14 +63,13 @@ export function useLikeMutation(
     onError: (error: any, _, context: any) => {
       if (context?.previousResumes) {
         queryClient.setQueryData(
-          ['resume', page, size, filters],
+          ["resume", page, size, filters],
           context.previousResumes,
         );
       }
     },
     onSettled: () => {
-      console.log('settled');
-      queryClient.invalidateQueries({ queryKey: ['resume'] });
+      queryClient.invalidateQueries({ queryKey: ["resume"] });
     },
   });
 }

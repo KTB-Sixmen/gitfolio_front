@@ -16,7 +16,6 @@ export function useResumeCommentCreate(resumeId: string) {
   return useMutation({
     mutationKey: ["resuemCommentCreate"],
     mutationFn: async ({ data }: RequestDto) => {
-      console.log(data);
       const response = await fetch(`/api/resumes/${resumeId}/comments`, {
         method: "POST",
         headers: {

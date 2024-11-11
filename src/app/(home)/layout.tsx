@@ -13,7 +13,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   const { setAccessToken, authenticated, setAuthentication } = useAuthStore(
-    (state) => state
+    (state) => state,
   );
 
   useEffect(() => {

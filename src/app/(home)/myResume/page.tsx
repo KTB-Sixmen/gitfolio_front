@@ -1,15 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import ResumeSkeleton from "../community/resumes/[resumeId]/_components/resume-skeleton";
 import { useMyResumeQuery } from "./_hooks/useMyResumeQuery";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import MyResumeSkeleton from "./_components/my-resume-skeleton";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PositionType, positionTypeMap } from "@/app/types/type";
+import moment from "moment";
+import "moment/locale/ko";
 
 export default function Page() {
   const { data: myResume } = useMyResumeQuery();
@@ -20,7 +20,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col w-full space-y-2 h-full p-12 px-40 overflow-y-auto">
+    <div className="flex flex-col w-full space-y-2 h-full p-12 px-64 overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
         <div className="text-2xl font-semibold">내 이력서 리스트</div>
         <Link
@@ -58,7 +58,11 @@ export default function Page() {
                 </Badge>
               ))}
             </div>
-            <div className="text-sm">2024.11.06 14:00</div>
+            <div className="text-sm">
+              {moment(resume.updatedAt).isSame(moment(), "day")
+                ? moment(resume.updatedAt).fromNow()
+                : moment(resume.updatedAt).format("YYYY.MM.DD HH:mm")}
+            </div>
             <div className="text-xs text-gray-600 stats">
               <span>조회수: {resume.viewCount}</span> |{" "}
               <span>좋아요: {resume.likeCount}</span>

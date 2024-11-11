@@ -149,8 +149,8 @@ export default function Page({ params }: Props) {
               <span className="px-6 flex-grow line-clamp-2">{`"${selectedText}"`}</span>
               <X
                 // size={}
-                className="absolute w-5 h-5 right-2 top-2 text-gray-600"
-                onClick={() => {}}
+                className="absolute w-5 h-5 right-2 top-2 text-gray-600 hover:bg-gray-300 rounded-full cursor-pointer"
+                onClick={() => setSelectedText("")}
               />
             </div>
           )}

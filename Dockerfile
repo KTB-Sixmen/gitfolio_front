@@ -15,7 +15,7 @@ RUN npm ci && \
 # 소스 코드 복사
 COPY . .
 
-# Next.js 빌드 (경고무시 옵션 추가)
+# Next.js 빌드
 RUN CI=false npm run build
 
 # 프로덕션 이미지 생성
@@ -23,8 +23,8 @@ FROM base AS runner
 WORKDIR /app
 
 # 환경변수 설정
-ENV NODE_ENV production \
-    NEXT_TELEMETRY_DISABLED 1 \
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
     HOST=0.0.0.0
 
@@ -36,13 +36,8 @@ RUN addgroup -S -g 1001 nodejs && \
 # 빌드 파일 복사
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-
-# 프로덕션 의존성 설치
-# 실행에 필요한 dependencies만 설치되어 이미지 크기 감소
-COPY --from=builder /app/pacakge*.json ./
-RUN npm ci --only=production && \
-    npm cache clean --force
 
 # 사용자 전환
 USER nextjs

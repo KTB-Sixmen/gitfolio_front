@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useResumeCommentDelete } from "../_hooks/useResumeCommentDelete";
 import CommentDeleteModal from "./comment-delete-modal";
 import { Button } from "@/components/ui/button";
+import { useProfileQuery } from "@/app/(home)/onboarding/_hooks/useProfileQuery";
 
 type Props = {
   resumeId: string;
@@ -21,6 +22,7 @@ export default function ResumeComment({ resumeId }: Props) {
   const { data: comments } = useResumeCommentQuery(resumeId);
   const { mutate } = useResumeCommentCreate(resumeId);
   const { mutate: deleteComment } = useResumeCommentDelete(resumeId);
+  const { data: userProfile } = useProfileQuery();
 
   const onSubmit = () => {
     const data = {
@@ -72,10 +74,12 @@ export default function ResumeComment({ resumeId }: Props) {
                     </div>
                     <p className="text-sm text-foreground">{comment.content}</p>
                   </div>
-                  <CommentDeleteModal
-                    onDelete={onDelete}
-                    commentId={comment.id}
-                  />
+                  {userProfile?.result.memberId === comment.memberId && (
+                    <CommentDeleteModal
+                      onDelete={onDelete}
+                      commentId={comment.id}
+                    />
+                  )}
                 </div>
                 {index < comments.result.length - 1 && <Separator />}
               </div>
