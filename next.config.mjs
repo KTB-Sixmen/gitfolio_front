@@ -34,15 +34,23 @@ const nextConfig = {
     return [
       {
         source: "/api/auth/:path*",
-        destination: "http://10.0.105.44/api/auth/:path*",
+        destination: `${process.env.AUTH_SERVER_URL}/api/auth/:path*`,
+        // destination: 'http://10.0.105.44/api/auth/:path*',
       },
       {
         source: "/api/members/:path*",
-        destination: "http://10.0.105.44:81/api/members/:path*",
+        destination: `${process.env.MEMBERS_SERVER_URL}/api/members/:path*`,
+        // destination: 'http://10.0.105.44:81/api/members/:path*',
       },
       {
         source: "/api/resumes/:path*",
-        destination: "http://10.0.105.75/api/resumes/:path*",
+        destination: `${process.env.RESUMES_SERVER_URL}/api/resumes/:path*`,
+        // destination: 'http://10.0.105.75/api/resumes/:path*',
+      },
+      {
+        source: "/api/notifications/:path*",
+        destination: `${process.env.NOTIFICATIONS_SERVER_URL}/api/resumes/:path*`,
+        // destination: 'http://10.0.105.75/api/resumes/:path*',
       },
     ];
   },
