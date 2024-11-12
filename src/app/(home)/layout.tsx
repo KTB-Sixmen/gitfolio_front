@@ -27,7 +27,7 @@ export default function MainLayout({
         if (response.ok) {
           const data = await response.json();
           const accessToken = data.accessToken;
-          console.log(accessToken);
+          // console.log(accessToken);
           setAccessToken(accessToken);
           setAuthentication(true);
         } else {

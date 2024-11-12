@@ -276,8 +276,12 @@ export default function Community() {
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold">
                       {positionTypeMap[
-                        resume.position.replace("개발자", "") as PositionType
-                      ] || resume.position}{" "}
+                        (resume.position
+                          ? resume.position.replace("개발자", "")
+                          : "") as PositionType
+                      ] ||
+                        resume.position ||
+                        "기본 포지션"}{" "}
                       개발자
                     </h3>
                     <button

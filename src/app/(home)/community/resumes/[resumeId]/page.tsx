@@ -102,7 +102,10 @@ export default function Page({ params }: Props) {
           <Separator className="bg-black" />
           <div className="space-y-4">
             <div className="text-2xl font-semibold">자기소개</div>
-            <div className="whitespace-pre-line">{resume.result.aboutMe}</div>
+            {/* <div className="whitespace-pre-line">{resume.result.aboutMe}</div> */}
+            <Markdown className="prose break-words prose-p:leading-relaxed prose-pre:p-0">
+              {resume.result.aboutMe}
+            </Markdown>
           </div>
 
           {/* 경력 */}
