@@ -24,7 +24,7 @@ next-env.d.ts
 .env*.local
 .env.development
 .env.test
-.env
+#.env
 
 # Debug
 .debug/
