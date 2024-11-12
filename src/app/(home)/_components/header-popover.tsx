@@ -37,7 +37,7 @@ export default function HeaderPopover({ avatarUrl, nickname, credit }: Props) {
           </Avatar>
           <p className="text-lg font-semibold">{nickname}</p>
           <p className="text-sm text-muted-foreground">Credit: {credit}</p>
-          <Link className="underline text-gray-500" href={"#"}>
+          <Link className="underline text-gray-500" href={"/edit"}>
             내 정보 수정
           </Link>
           <Button

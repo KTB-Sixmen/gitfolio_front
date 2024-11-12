@@ -7,6 +7,7 @@ export interface ResumeFilter {
   techStack: string;
   schoolType: string;
   sortOrder: string;
+  liked: string;
 }
 interface Resume {
   resumeId: string;
@@ -39,7 +40,7 @@ const getResume = async (
   accessToken: string | null,
   page: number,
   size: number,
-  filters: ResumeFilter
+  filters: ResumeFilter,
 ) => {
   const filterParams = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
@@ -56,7 +57,7 @@ const getResume = async (
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
+    },
   );
   if (!response.ok) {
     throw new Error("Network response was not ok");

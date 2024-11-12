@@ -39,7 +39,7 @@ interface Link {
   linkUrl: string;
 }
 
-interface Result {
+export interface ProfileResult {
   memberId: number;
   memberAdditionalInfoId: string;
   nickname: string;
@@ -56,12 +56,12 @@ interface Result {
   links: Link[];
 }
 
-interface ApiResponse {
+interface ProfileApiResponse {
   time: string;
   status: string;
   code: string;
   message: string;
-  result: Result;
+  result: ProfileResult;
 }
 
 const getUserProfile = async (accessToken: string | null) => {
@@ -75,12 +75,12 @@ const getUserProfile = async (accessToken: string | null) => {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const data: ApiResponse = await response.json();
+  const data: ProfileApiResponse = await response.json();
   return data || "";
 };
 export const useProfileQuery = () => {
   const { accessToken } = useAuthStore((state) => state);
-  return useQuery<ApiResponse>({
+  return useQuery<ProfileApiResponse>({
     queryKey: ["profile"],
     queryFn: () => getUserProfile(accessToken),
     enabled: !!accessToken,

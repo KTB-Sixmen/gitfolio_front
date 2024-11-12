@@ -8,6 +8,8 @@ import { Github, Link, Linkedin, PencilLine, X } from "lucide-react";
 import {
   GraduationStatus,
   graduationStatusMap,
+  PositionType,
+  positionTypeMap,
   SchoolType,
   schoolTypeMap,
   WorkType,
@@ -21,6 +23,7 @@ import { useResumeDetailQuery } from "../../community/_hooks/useResumeQuery";
 import ResumeComment from "../../community/resumes/[resumeId]/_components/resume-comment";
 import { CornerDownRight } from "lucide-react";
 import PdfDownloadButton from "./_components/PdfDownloadButton";
+import Markdown from "react-markdown";
 
 type Props = {
   params: { resumeId: string };
@@ -205,7 +208,9 @@ export default function Page({ params }: Props) {
               <div className="mb-4 text-5xl font-semibold">
                 {resume.result.memberName}
               </div>
-              <div className="text-2xl">{resume.result.position}</div>
+              <div className="text-2xl">
+                {positionTypeMap[resume.result.position as PositionType]} 개발자
+              </div>
             </div>
             <div className="relative w-[228px] h-[228px]">
               <Image
@@ -277,7 +282,10 @@ export default function Page({ params }: Props) {
                       </div>
                       <div>{project.skillSet}</div>
                     </div>
-                    <div>{project.projectDescription}</div>
+                    <Markdown className="prose break-words prose-p:leading-relaxed prose-pre:p-0">
+                      {project.projectDescription}
+                    </Markdown>
+                    {/* <div>{project.projectDescription}</div> */}
                     {index < resume.result.projects.length - 1 && (
                       <Separator className="my-4 bg-gray-300" />
                     )}

@@ -3,11 +3,7 @@
 import Image from "next/image";
 import { Heart, Plus, RefreshCw } from "lucide-react";
 import MAIN_BANNER from "../../../../../public/images/main-banner.png";
-import {
-  ResumeFilter,
-  ResumeResponse,
-  useResumeQuery,
-} from "../_hooks/useResumeQuery";
+import { ResumeFilter, useResumeQuery } from "../_hooks/useResumeQuery";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -16,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -30,8 +26,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CommunitySkeleton from "../_components/community-skeleton";
 import { PositionType, positionTypeMap, schoolTypeMap } from "@/app/types/type";
-import { useQueryClient } from "@tanstack/react-query";
 import { useLikeMutation } from "../_hooks/useLikeMutation";
+// import { useLikeMutation } from "../_hooks/useLikeMutation2";
 import {
   Tooltip,
   TooltipContent,
@@ -39,10 +35,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { debounce } from "lodash";
+import { useNotificationsQuery } from "../../_hooks/useNotificationQuery";
 
 export default function Community() {
-  const queryClient = useQueryClient();
-
   const searchParams = useSearchParams();
   const pageParam = searchParams.get("page");
   const page = pageParam ? parseInt(pageParam) : 1;
@@ -54,6 +49,7 @@ export default function Community() {
     techStack: "",
     schoolType: "",
     sortOrder: "recent",
+    liked: "false",
   });
 
   const router = useRouter();
@@ -61,22 +57,30 @@ export default function Community() {
   const { mutate } = useLikeMutation(page, size, filters);
 
   useEffect(() => {
-    const newFilters = {
+    const newFilters: ResumeFilter = {
       position: searchParams.get("position") || "",
       techStack: searchParams.get("techStack") || "",
       schoolType: searchParams.get("schoolType") || "",
       sortOrder: searchParams.get("sortOrder") || "",
+      liked: searchParams.get("liked") || "false",
     };
     setFilters(newFilters);
-  }, [searchParams]);
 
-  const handleHeartClick = useMemo(
-    () =>
-      debounce((resumeId: string) => {
-        mutate(resumeId);
-      }, 500),
-    [mutate],
-  );
+    const query = new URLSearchParams();
+    Object.entries(newFilters).forEach(([key, val]) => {
+      if (val) query.append(key, val as string);
+    });
+    query.append("page", "1");
+    router.push(`/community?${query.toString()}`);
+  }, [searchParams, router]);
+
+  // const handleHeartClick = useMemo(
+  //   () =>
+  //     debounce((resumeId: string) => {
+  //       mutate(resumeId);
+  //     }, 500),
+  //   [mutate],
+  // );
 
   if (isLoading || !resumes) {
     return <CommunitySkeleton size={size} />;
@@ -89,6 +93,7 @@ export default function Community() {
       techStack: "",
       schoolType: "",
       sortOrder: "recent",
+      liked: "false",
     });
     router.push(`/community`);
   };
@@ -127,7 +132,7 @@ export default function Community() {
       <Button
         className="fixed bottom-8 pr-6 py-6 z-30 right-4 bg-blue-500 text-white gap-2 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
         onClick={() => {
-          router.push("/myResume/create");
+          router.push("/myResume/create", { scroll: false });
         }}
       >
         <Plus />
@@ -207,7 +212,7 @@ export default function Community() {
               </SelectContent>
             </Select>
           </div>
-          <TooltipProvider delayDuration={0}>
+          {/* <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger className="flex gap-2 p-2 px-4 items-center text-gray-500 border border-gray-400 rounded-2xl">
                 <Heart className="w-4 h-4" />
@@ -217,7 +222,24 @@ export default function Community() {
                 <p>준비중입니다!</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
+          <Button
+            // className="flex gap-2 p-2 px-4 items-center bg-white hover:bg-gray-200 text-gray-500 border border-gray-400 rounded-2xl"
+            className={`flex gap-2 p-2 px-4 items-center rounded-2xl ${
+              filters.liked === "true"
+                ? "bg-red-500 hover:bg-red-600 text-white"
+                : "bg-white text-gray-500 hover:bg-gray-200 border border-gray-400"
+            }`}
+            onClick={() => {
+              handleFilterChange(
+                "liked",
+                filters.liked === "false" ? "true" : "false",
+              );
+            }}
+          >
+            <Heart className="w-4 h-4" />
+            <div className="">좋아요 누른 이력서만 보기</div>
+          </Button>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {resumes.result.content.map((resume, idx) => {
@@ -248,6 +270,7 @@ export default function Community() {
                   width={300}
                   height={300}
                   className="object-cover w-full h-48 rounded-lg"
+                  priority
                 />
                 <div className="p-4">
                   <div className="flex items-center justify-between">
@@ -260,7 +283,8 @@ export default function Community() {
                     <button
                       onClick={(e) => {
                         e.preventDefault();
-                        handleHeartClick(resume.resumeId);
+                        // handleHeartClick(resume.resumeId);
+                        mutate(resume.resumeId);
                       }}
                       className="cursor-pointer"
                       aria-label={resume.isLiked ? "Unlike" : "Like"}

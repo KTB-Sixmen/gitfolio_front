@@ -51,7 +51,7 @@ export function useResumeMutation() {
             <div className="flex justify-between items-center w-full">
               <div>이력서 등록에 성공하였습니다.</div>
               <button
-                onClick={() => router.push(`/myResume/${success.resumeId}`)}
+                onClick={() => router.push(`/myResume/${success.result}`)}
                 className="ml-4 px-2 py-1 border hover:bg-green-200 border-green-500 text-green-700 rounded-lg"
               >
                 보러가기

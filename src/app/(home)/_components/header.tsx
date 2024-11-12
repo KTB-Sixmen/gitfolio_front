@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Bell } from "lucide-react";
 import NotificationPopover from "./notification-popover";
+import { useNotificationsQuery } from "../_hooks/useNotificationQuery";
 
 export default function Header() {
   const { mutate } = useLogout();

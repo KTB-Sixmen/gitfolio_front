@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import GITHUB_LOGO from "../../../../../../public/images/github-mark.png";
 import { Separator } from "@/components/ui/separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faHeart, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Github, Link, Linkedin } from "lucide-react";
 import { useResumeDetailQuery } from "../../_hooks/useResumeQuery";
 import {
@@ -21,6 +20,7 @@ import Tistory from "../../../../../../public/tistory.svg";
 import Notion from "../../../../../../public/notion.svg";
 import ResumeComment from "./_components/resume-comment";
 import ResumeSkeleton from "./_components/resume-skeleton";
+import Markdown from "react-markdown";
 
 type Props = {
   params: { resumeId: string };
@@ -158,7 +158,10 @@ export default function Page({ params }: Props) {
                       </div>
                       <div>{project.skillSet}</div>
                     </div>
-                    <div>{project.projectDescription}</div>
+                    <Markdown className="prose break-words prose-p:leading-relaxed prose-pre:p-0">
+                      {project.projectDescription}
+                    </Markdown>
+                    {/* <div>{project.projectDescription}</div> */}
                     {index < resume.result.projects.length - 1 && (
                       <Separator className="my-4 bg-gray-300" />
                     )}
