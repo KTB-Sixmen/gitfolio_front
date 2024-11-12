@@ -49,7 +49,7 @@ const nextConfig = {
       },
       {
         source: "/api/notifications/:path*",
-        destination: `${process.env.NOTIFICATIONS_SERVER_URL}/api/resumes/:path*`,
+        destination: `${process.env.NOTIFICATIONS_SERVER_URL}/api/notifications/:path*`,
         // destination: 'http://10.0.105.75/api/resumes/:path*',
       },
     ];

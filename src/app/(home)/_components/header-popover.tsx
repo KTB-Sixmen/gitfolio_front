@@ -22,7 +22,7 @@ type Props = {
 export default function HeaderPopover({ avatarUrl, nickname, credit }: Props) {
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild className="cursor-pointer">
         <Avatar>
           <AvatarImage src={avatarUrl} alt="Profile Image" />
         </Avatar>

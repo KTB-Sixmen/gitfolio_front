@@ -3,7 +3,7 @@ name: Next.js Test CI/CD Pipeline
 on:
   push:
     branches:
-      - feature/cicd    # dev 브랜치에 푸시될 때 실행
+      - master    # dev 브랜치에 푸시될 때 실행
 
 env:
   EC2_HOST: ${{ secrets.EC2_HOST_TEST }}  # 환경변수로 IP 주소 설정
