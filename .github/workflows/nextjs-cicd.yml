@@ -89,12 +89,14 @@ jobs:
             --target "${{ steps.get-instance-id.outputs.instance_id }}" \
             --document-name AWS-StartInteractiveCommand \
             --parameters command="sudo -i && \
-              docker pull ${{ secrets.DOCKER_REPO }}:dev && \
-              docker stop nextjs-frontend || true && \
-              docker rm nextjs-frontend || true && \
+              docker pull gitfolio_front:dev && \
+              docker stop gitfolio_front || true && \
+              docker rm gitfolio_front || true && \
               docker run -d \
-                --name nextjs-frontend \
-                -p 3000:3000 \
+                --name gitfolio_front \
+                -p 80:3000 \
+                -p 443:3000 \
+                -p 5000:3000 \
                 -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
                 -e NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
                 -e NODE_ENV=production \

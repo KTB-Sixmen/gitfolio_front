@@ -4,7 +4,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    image: aida0/gitfolio_front:test
+    image: aida0/gitfolio_front:dev
     container_name: gitfolio_front
     ports:
       - target: 3000

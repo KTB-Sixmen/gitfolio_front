@@ -338,8 +338,7 @@ export default function Community() {
                     </button>
                   </div>
                   <p className="mt-2 text-sm text-gray-600 whitespace-pre-line line-clamp-6">
-                    {/* {resume.aboutMe} */}
-                    {resume.aboutMe.replace(/\*/g, "")}
+                    {resume.aboutMe}
                   </p>
                 </div>
               </Link>
