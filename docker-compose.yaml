@@ -4,7 +4,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    image: aida0/gitfolio_front:dev
+    image: aida0/gitfolio_front:test
     container_name: gitfolio_front
     ports:
       - target: 3000
@@ -16,3 +16,9 @@ services:
       - target: 3000
         published: 5000
         protocol: tcp
+    networks:
+      - front
+
+networks:
+  front:
+    driver: overlay

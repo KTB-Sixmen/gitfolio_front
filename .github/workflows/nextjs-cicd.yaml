@@ -48,7 +48,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: aida0/gitfolio_front:dev
+          tags: aida0/gitfolio_front:test
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
@@ -95,7 +95,7 @@ jobs:
           cat << 'EOF' > deploy.sh
           #!/bin/bash
           sudo -i
-          docker pull aida0/gitfolio_front:dev
+          docker pull aida0/gitfolio_front:test
           docker stop gitfolio_front || true
           docker rm gitfolio_front || true
           docker run -d \
@@ -110,20 +110,7 @@ jobs:
             -e MEMBERS_SERVER_URL="${MEMBERS_SERVER_URL}" \
             -e RESUMES_SERVER_URL="${RESUMES_SERVER_URL}" \
             -e NOTIFICATIONS_SERVER_URL="${NOTIFICATIONS_SERVER_URL}" \
-            aida0/gitfolio_front:dev
+            aida0/gitfolio_front:test
           EOF
           chmod +x deploy.sh
 
-      - name: Deploy using SSM Session
-        run: |
-          aws ssm start-session \
-            --target "${{ steps.get-instance-id.outputs.instance_id }}" \
-            --document-name "AWS-StartInteractiveCommand" \
-            --parameters '{"command":["bash -c \"$(cat deploy.sh)\""]}'
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_S3_URL: ${{ secrets.NEXT_PUBLIC_S3_URL }}
-          AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL }}
-          MEMBERS_SERVER_URL: ${{ secrets.MEMBERS_SERVER_URL }}
-          RESUMES_SERVER_URL: ${{ secrets.RESUMES_SERVER_URL }}
-          NOTIFICATIONS_SERVER_URL: ${{ secrets.NOTIFICATIONS_SERVER_URL }}
