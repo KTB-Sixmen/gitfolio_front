@@ -93,11 +93,10 @@ jobs:
 
       - name: Create deployment script
         run: |
-          cat << 'EOF' > deploy.sh
+          cat > deploy.sh << 'EOF'
           #!/bin/bash
           cd /home/ec2-user
           
-          # Create .env file with GitHub Secrets
           cat << 'ENVEOF' > .env
           NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
@@ -107,29 +106,23 @@ jobs:
           NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }}
           ENVEOF
           
-          # Pull latest images
           docker-compose pull
           
-          # Stop and remove existing containers, volumes, and images
           docker-compose down -v --rmi all
           
-          # Pull images again
           docker-compose pull
           
-          # Start containers in detached mode
           docker-compose up -d
           
-          # Show running containers
           docker ps -a
           EOF
           chmod +x deploy.sh
 
-          - name: Deploy to EC2
-            run: |
-              # Send the script to the instance and execute it
-              aws ssm send-command \
-                --instance-ids "${{ steps.get-instance-id.outputs.instance_id }}" \
-                --document-name "AWS-RunShellScript" \
-                --parameters "commands=[`cat deploy.sh`]" \
-                --output text
+      - name: Deploy to EC2
+        run: |              
+          aws ssm send-command \
+            --instance-ids "${{ steps.get-instance-id.outputs.instance_id }}" \
+            --document-name "AWS-RunShellScript" \
+            --parameters "commands=[`cat deploy.sh`]" \
+            --output text
 
