@@ -94,7 +94,7 @@ jobs:
             --parameters command="sudo -i && \
               docker pull aida0/gitfolio_front:dev && \
               docker compose down || true && \
-              echo 'services:
+              echo \"services:
                 front:
                   platform: linux/amd64
                   image: aida0/gitfolio_front:dev
@@ -120,5 +120,5 @@ jobs:
                   networks:
                     - front
                 networks:
-                  front:' > docker-compose.yaml && \
+                  front:\" > docker-compose.yaml && \
               docker compose up -d"
