@@ -69,4 +69,18 @@ jobs:
             --comment "Deploying new Docker image" \
             --parameters '{"commands":["cd /home/ec2-user && docker-compose down -v --rmi all && docker-compose pull && docker-compose up -d"], "workingDirectory":["/home/ec2-user"]}' \
             --timeout-seconds 600 \
-            --region your-aws-region
+            --region ap-northeast-2
+
+      # 8단계: 배포 상태 확인 추가
+      - name: Check deployment status
+        run: |
+          COMMAND_ID=$(aws ssm list-commands \
+            --filters "Key=Status,Values=[Pending,InProgress]" \
+            --query "Commands[0].CommandId" \
+            --output text)
+
+          if [ ! -z "$COMMAND_ID" ] && [ "$COMMAND_ID" != "None" ]; then
+            aws ssm wait command-executed \
+              --command-id "$COMMAND_ID" \
+              --instance-id "${{ steps.get_instances.outputs.instance_ids }}"
+          fi
