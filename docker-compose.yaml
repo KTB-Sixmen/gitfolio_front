@@ -16,9 +16,3 @@ services:
       - target: 3000
         published: 5000
         protocol: tcp
-    networks:
-      - front
-
-networks:
-  front:
-    driver: overlay
