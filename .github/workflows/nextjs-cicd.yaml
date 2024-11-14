@@ -72,8 +72,22 @@ jobs:
       - name: Get Instance ID
         id: get-instance-id
         run: |
-          INSTANCE_ID="i-0c29bfed98d88f250" 
-          echo "Targeting EC2 instance: $INSTANCE_ID" 
+          INSTANCE_ID=$(aws ssm describe-instance-information \
+            --output json \
+            --query "InstanceInformationList[*].InstanceId" | \
+          jq -r '.[]' | \
+          xargs -I {} aws ec2 describe-instances \
+            --instance-ids {} \
+            --query "Reservations[*].Instances[*].{InstanceId:InstanceId}[?Tags[?Key=='Name' && Value=='Gitfolio Frontend']]" \
+            --output json | \
+          jq -r '.[0][0].InstanceId')
+          
+          if [ -z "$INSTANCE_ID" ]; then
+            echo "Error: No instance found with the specified tags"
+            exit 1
+          fi
+          
+          echo "Found EC2 instance: $INSTANCE_ID"
           echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
 
       - name: Test SSM Connection
@@ -87,30 +101,45 @@ jobs:
           curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
           sudo dpkg -i session-manager-plugin.deb
 
-      - name: Install expect
-        run: sudo apt-get install -y expect
-
       - name: Create deployment script
         run: |
           cat << 'EOF' > deploy.sh
           #!/bin/bash
-          sudo -i
-          docker pull aida0/gitfolio_front:test
-          docker stop gitfolio_front || true
-          docker rm gitfolio_front || true
-          docker run -d \
-            --name gitfolio_front \
-            -p 80:3000 \
-            -p 443:3000 \
-            -p 5000:3000 \
-            -e NEXT_PUBLIC_API_URL="${NEXT_PUBLIC_API_URL}" \
-            -e NEXT_PUBLIC_S3_URL="${NEXT_PUBLIC_S3_URL}" \
-            -e NODE_ENV=production \
-            -e AUTH_SERVER_URL="${AUTH_SERVER_URL}" \
-            -e MEMBERS_SERVER_URL="${MEMBERS_SERVER_URL}" \
-            -e RESUMES_SERVER_URL="${RESUMES_SERVER_URL}" \
-            -e NOTIFICATIONS_SERVER_URL="${NOTIFICATIONS_SERVER_URL}" \
-            aida0/gitfolio_front:test
+          cd /home/ec2-user
+          
+          # Create .env file with GitHub Secrets
+          cat << 'ENVEOF' > .env
+          NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
+          AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }}
+          MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }}
+          RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }}
+          NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }}
+          ENVEOF
+          
+          # Pull latest images
+          docker-compose pull
+          
+          # Stop and remove existing containers, volumes, and images
+          docker-compose down -v --rmi all
+          
+          # Pull images again
+          docker-compose pull
+          
+          # Start containers in detached mode
+          docker-compose up -d
+          
+          # Show running containers
+          docker ps -a
           EOF
           chmod +x deploy.sh
+
+          - name: Deploy to EC2
+            run: |
+              # Send the script to the instance and execute it
+              aws ssm send-command \
+                --instance-ids "${{ steps.get-instance-id.outputs.instance_id }}" \
+                --document-name "AWS-RunShellScript" \
+                --parameters "commands=[`cat deploy.sh`]" \
+                --output text
 
