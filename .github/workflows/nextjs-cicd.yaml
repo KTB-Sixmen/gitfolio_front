@@ -75,7 +75,7 @@ jobs:
       - name: Check deployment status
         run: |
           COMMAND_ID=$(aws ssm list-commands \
-            --filters "Key=Status,Values=[Pending,InProgress]" \
+            --filters "key=Status,value=Pending,InProgress" \
             --query "Commands[0].CommandId" \
             --output text)
 
