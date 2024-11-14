@@ -72,11 +72,15 @@ jobs:
       - name: Get Instance ID
         id: get-instance-id
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=Gitfolio Frontend" \
-            --query "Reservations[*].Instances[*].InstanceId" \
-            --output text)
+          INSTANCE_ID="i-0c29bfed98d88f250" 
+          echo "Targeting EC2 instance: $INSTANCE_ID" 
           echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+
+      - name: Test SSM Connection
+        run: |
+          echo "Attempting to connect to instance ${{ steps.get-instance-id.outputs.instance_id }}"
+          aws ssm describe-instance-information --filters "Key=InstanceIds,Values=${{ steps.get-instance-id.outputs.instance_id }}" --output json
+          echo "SSM Status Check completed"
 
       - name: Install Session Manager Plugin
         run: |
@@ -88,39 +92,29 @@ jobs:
 
       - name: Deploy using SSM Session
         run: |
+          echo "Starting deployment to instance ${{ steps.get-instance-id.outputs.instance_id }}"
           unbuffer aws ssm start-session \
             --target "${{ steps.get-instance-id.outputs.instance_id }}" \
             --document-name AWS-StartInteractiveCommand \
-            --parameters command="sudo -i && \
+            --parameters command="echo 'Successfully connected to instance' && \
+              sudo -i && \
+              echo 'Switched to root user' && \
               docker pull aida0/gitfolio_front:dev && \
-              docker compose down || true && \
-              cat > docker-compose.yaml << 'ENDFILE'
-              services:
-                front:
-                  platform: linux/amd64
-                  image: aida0/gitfolio_front:dev
-                  container_name: gitfolio_front
-                  ports:
-                    - target: 3000
-                      published: 80
-                      protocol: tcp
-                    - target: 3000
-                      published: 443
-                      protocol: tcp
-                    - target: 3000
-                      published: 5000
-                      protocol: tcp
-                  environment:
-                    - NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-                    - NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
-                    - NODE_ENV=production
-                    - AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }}
-                    - MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }}
-                    - RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }}
-                    - NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }}
-                  networks:
-                    - front
-              networks:
-                front:
-              ENDFILE
-              && docker compose up -d"
+              echo 'Pulled latest image' && \
+              docker stop gitfolio_front || true && \
+              docker rm gitfolio_front || true && \
+              echo 'Removed old container' && \
+              docker run -d \
+                --name gitfolio_front \
+                -p 80:3000 \
+                -p 443:3000 \
+                -p 5000:3000 \
+                -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+                -e NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
+                -e NODE_ENV=production \
+                -e AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }} \
+                -e MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }} \
+                -e RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }} \
+                -e NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }} \
+                aida0/gitfolio_front:dev && \
+              echo 'Deployment completed successfully'"
