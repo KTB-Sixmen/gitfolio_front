@@ -90,31 +90,40 @@ jobs:
       - name: Install expect
         run: sudo apt-get install -y expect
 
+      - name: Create deployment script
+        run: |
+          cat << 'EOF' > deploy.sh
+          #!/bin/bash
+          sudo -i
+          docker pull aida0/gitfolio_front:dev
+          docker stop gitfolio_front || true
+          docker rm gitfolio_front || true
+          docker run -d \
+            --name gitfolio_front \
+            -p 80:3000 \
+            -p 443:3000 \
+            -p 5000:3000 \
+            -e NEXT_PUBLIC_API_URL="${NEXT_PUBLIC_API_URL}" \
+            -e NEXT_PUBLIC_S3_URL="${NEXT_PUBLIC_S3_URL}" \
+            -e NODE_ENV=production \
+            -e AUTH_SERVER_URL="${AUTH_SERVER_URL}" \
+            -e MEMBERS_SERVER_URL="${MEMBERS_SERVER_URL}" \
+            -e RESUMES_SERVER_URL="${RESUMES_SERVER_URL}" \
+            -e NOTIFICATIONS_SERVER_URL="${NOTIFICATIONS_SERVER_URL}" \
+            aida0/gitfolio_front:dev
+          EOF
+          chmod +x deploy.sh
+
       - name: Deploy using SSM Session
         run: |
-          echo "Starting deployment to instance ${{ steps.get-instance-id.outputs.instance_id }}"
-          unbuffer aws ssm start-session \
+          aws ssm start-session \
             --target "${{ steps.get-instance-id.outputs.instance_id }}" \
-            --document-name AWS-StartInteractiveCommand \
-            --parameters command="echo 'Successfully connected to instance' && \
-              sudo -i && \
-              echo 'Switched to root user' && \
-              docker pull aida0/gitfolio_front:dev && \
-              echo 'Pulled latest image' && \
-              docker stop gitfolio_front || true && \
-              docker rm gitfolio_front || true && \
-              echo 'Removed old container' && \
-              docker run -d \
-                --name gitfolio_front \
-                -p 80:3000 \
-                -p 443:3000 \
-                -p 5000:3000 \
-                -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
-                -e NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
-                -e NODE_ENV=production \
-                -e AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }} \
-                -e MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }} \
-                -e RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }} \
-                -e NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }} \
-                aida0/gitfolio_front:dev && \
-              echo 'Deployment completed successfully'"
+            --document-name "AWS-StartInteractiveCommand" \
+            --parameters '{"command":["bash -c \"$(cat deploy.sh)\""]}'
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_S3_URL: ${{ secrets.NEXT_PUBLIC_S3_URL }}
+          AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL }}
+          MEMBERS_SERVER_URL: ${{ secrets.MEMBERS_SERVER_URL }}
+          RESUMES_SERVER_URL: ${{ secrets.RESUMES_SERVER_URL }}
+          NOTIFICATIONS_SERVER_URL: ${{ secrets.NOTIFICATIONS_SERVER_URL }}
