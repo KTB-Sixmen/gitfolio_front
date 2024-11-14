@@ -22,7 +22,7 @@ export default function Home() {
             priority
           />
           <div className="mb-6 text-blue-600">
-            한 큐에 만드는 나만의 이력서, <strong>깃트폴리오</strong>
+            한 큐에 만드는 나만의 이력서, <strong>깃트폴리오집보내줘</strong>
           </div>
           <Button onClick={handleGithubLogin} className="flex gap-2">
             <Image
