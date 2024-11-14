@@ -64,7 +64,7 @@ jobs:
 #            NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }}
 
   deploy:
-    needs: build
+#    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS Credentials
