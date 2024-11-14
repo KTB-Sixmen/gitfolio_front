@@ -91,13 +91,15 @@ jobs:
           curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
           sudo dpkg -i session-manager-plugin.deb
 
-      - name: Create deployment script
+      - name: Create and Execute Deployment
         run: |
+          # First, create the deployment script
           cat > deploy.sh << 'EOF'
           #!/bin/bash
           cd /home/ec2-user
           
-          cat << 'ENVEOF' > .env
+          # Create .env file with GitHub Secrets
+          cat > .env << 'ENVEOF'
           NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
           AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }}
@@ -116,13 +118,18 @@ jobs:
           
           docker ps -a
           EOF
-          chmod +x deploy.sh
-
-      - name: Deploy to EC2
-        run: |              
+          
+          # Convert script content to JSON format for AWS SSM
+          SCRIPT_CONTENT=$(cat deploy.sh)
+          ESCAPED_CONTENT=$(echo "$SCRIPT_CONTENT" | jq -R -s '.')
+          
+          # Create parameters JSON
+          PARAMS=$(echo "{\"commands\":[$ESCAPED_CONTENT]}" | jq -c '.')
+          
+          # Execute AWS SSM command
           aws ssm send-command \
             --instance-ids "${{ steps.get-instance-id.outputs.instance_id }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters "commands=[`cat deploy.sh`]" \
+            --parameters "$PARAMS" \
             --output text
 
