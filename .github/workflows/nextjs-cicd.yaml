@@ -93,18 +93,32 @@ jobs:
             --document-name AWS-StartInteractiveCommand \
             --parameters command="sudo -i && \
               docker pull aida0/gitfolio_front:dev && \
-              docker stop gitfolio_front || true && \
-              docker rm gitfolio_front || true && \
-              docker run -d \
-                --name gitfolio_front \
-                -p 80:3000 \
-                -p 443:3000 \
-                -p 5000:3000 \
-                -e NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
-                -e NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
-                -e NODE_ENV=production \
-                -e AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }} \
-                -e MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }} \
-                -e RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }} \
-                -e NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }} \
-                aida0/gitfolio_front:dev"
+              docker compose down || true && \
+              echo 'services:
+                front:
+                  platform: linux/amd64
+                  image: aida0/gitfolio_front:dev
+                  container_name: gitfolio_front
+                  ports:
+                    - target: 3000
+                      published: 80
+                      protocol: tcp
+                    - target: 3000
+                      published: 443
+                      protocol: tcp
+                    - target: 3000
+                      published: 5000
+                      protocol: tcp
+                  environment:
+                    - NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+                    - NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
+                    - NODE_ENV=production
+                    - AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }}
+                    - MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }}
+                    - RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }}
+                    - NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }}
+                  networks:
+                    - front
+                networks:
+                  front:' > docker-compose.yaml && \
+              docker compose up -d"
