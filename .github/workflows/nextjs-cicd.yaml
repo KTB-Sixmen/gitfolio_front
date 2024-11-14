@@ -52,10 +52,7 @@ jobs:
         run: |
           INSTANCE_IDS=$(aws ec2 describe-instances \
             --region ap-northeast-2 \
-            --filters "Name=tag:Name,Values=Gitfolio Frontend" \
-                      "Name=tag:Service,Values=Front" \
-                      "Name=tag:Environment,Values=dev" \
-                      "Name=tag:Type,Values=ec2" \
+            --filters '[{"Name":"tag:Name","Values":["Gitfolio Frontend"]},{"Name":"tag:Service","Values":["front"]},{"Name":"tag:Environment","Values":["dev"]},{"Name":"tag:Type","Values":["ec2"]}]' \
             --query 'Reservations[].Instances[].InstanceId' \
             --output text)
           echo "INSTANCE_IDS=$INSTANCE_IDS"
