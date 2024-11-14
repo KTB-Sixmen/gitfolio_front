@@ -6,130 +6,67 @@ on:
       - feature/cicd
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '20.4'
-#          cache: 'npm'
-#
-#      - name: Install Docker Compose
-#        run: |
-#          sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-#          sudo chmod +x /usr/local/bin/docker-compose
-#
-#      - name: Install dependencies
-#        run: npm ci
-#
-#      - name: Build Next.js app
-#        run: npm run build
-#        env:
-#          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-#          NEXT_PUBLIC_S3_URL: ${{ secrets.NEXT_PUBLIC_S3_URL }}
-#          NODE_ENV: 'production'
-#          AUTH_SERVER_URL: ${{ secrets.AUTH_SERVER_URL }}
-#          MEMBERS_SERVER_URL: ${{ secrets.MEMBERS_SERVER_URL }}
-#          RESUMES_SERVER_URL: ${{ secrets.RESUMES_SERVER_URL }}
-#          NOTIFICATIONS_SERVER_URL: ${{ secrets.NOTIFICATIONS_SERVER_URL }}
-#
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v2
-#
-#      - name: Log in to Docker Hub
-#        uses: docker/login-action@v2
-#        with:
-#          username: ${{ secrets.DOCKERHUB_USERNAME }}
-#          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-#
-#      - name: Build and Push Docker Image
-#        uses: docker/build-push-action@v4
-#        with:
-#          context: .
-#          file: ./Dockerfile
-#          platforms: linux/amd64
-#          push: true
-#          tags: aida0/gitfolio_front:test
-#          build-args: |
-#            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-#            NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
-#            NODE_ENV=production
-#            AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }}
-#            MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }}
-#            RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }}
-#            NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }}
-
-  deploy:
-#    needs: build
+  build_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Configure AWS Credentials
+      # 1단계: 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2단계: AWS 자격 증명 구성
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+          aws-region: ap-northeast-2  # AWS 리전을 실제 값으로 대체하세요
 
-      - name: Get Instance ID
-        id: get-instance-id
-        run: |
-          INSTANCE_ID=i-0c29bfed98d88f250 
-          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+      # 3단계: Docker Hub에 로그인
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Test SSM Connection
+      # 4단계: Docker 이미지 빌드
+      - name: Build the Docker image
         run: |
-          echo "Attempting to connect to instance ${{ steps.get-instance-id.outputs.instance_id }}"
-          aws ssm describe-instance-information --filters "Key=InstanceIds,Values=${{ steps.get-instance-id.outputs.instance_id }}" --output json
-          echo "SSM Status Check completed"
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            --build-arg NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
+            --build-arg AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }} \
+            --build-arg MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }} \
+            --build-arg RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }} \
+            --build-arg NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }} \
+            -t aida0/gitfolio_front:test .
 
-      - name: Install Session Manager Plugin
+      # 5단계: Docker 이미지 푸시
+      - name: Push the Docker image
         run: |
-          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
-          sudo dpkg -i session-manager-plugin.deb
+          docker push aida0/gitfolio_front:test
 
-      - name: Create and Execute Deployment
+      # 6단계: 태그를 기반으로 EC2 인스턴스 ID 가져오기
+      - name: Get EC2 Instance IDs
+        id: get_instances
         run: |
-          # First, create the deployment script
-          cat > deploy.sh << 'EOF'
-          #!/bin/bash
-          cd /home/ec2-user
-          
-          # Create .env file with GitHub Secrets
-          cat > .env << 'ENVEOF'
-          NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
-          AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }}
-          MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }}
-          RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }}
-          NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }}
-          ENVEOF
-          
-          docker-compose pull
-          
-          docker-compose down -v --rmi all
-          
-          docker-compose pull
-          
-          docker-compose up -d
-          
-          docker ps -a
-          EOF
-          
-          # Convert script content to JSON format for AWS SSM
-          SCRIPT_CONTENT=$(cat deploy.sh)
-          ESCAPED_CONTENT=$(echo "$SCRIPT_CONTENT" | jq -R -s '.')
-          
-          # Create parameters JSON
-          PARAMS=$(echo "{\"commands\":[$ESCAPED_CONTENT]}" | jq -c '.')
-          
-          # Execute AWS SSM command
+          INSTANCE_IDS=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=Gitfolio Frontend" \
+                      "Name=tag:Service,Values=Front" \
+                      "Name=tag:Environment,Values=dev" \
+                      "Name=tag:Type,Values=ec2" \
+            --query 'Reservations[].Instances[].InstanceId' \
+            --output text)
+          echo "INSTANCE_IDS=$INSTANCE_IDS"
+          echo "instance_ids=$INSTANCE_IDS" >> $GITHUB_OUTPUT
+
+      # 7단계: AWS SSM을 통해 EC2 인스턴스에 배포
+      - name: Deploy to EC2 instances
+        run: |
           aws ssm send-command \
-            --instance-ids "${{ steps.get-instance-id.outputs.instance_id }}" \
+            --instance-ids ${{ steps.get_instances.outputs.instance_ids }} \
             --document-name "AWS-RunShellScript" \
-            --parameters "$PARAMS" \
-            --output text
-
+            --comment "Deploying new Docker image" \
+            --parameters '{"commands":["cd /home/ec2-user && docker-compose down -v --rmi all && docker-compose pull && docker-compose up -d"], "workingDirectory":["/home/ec2-user"]}' \
+            --timeout-seconds 600 \
+            --region your-aws-region
