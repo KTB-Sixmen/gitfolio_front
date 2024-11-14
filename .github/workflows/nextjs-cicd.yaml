@@ -3,7 +3,7 @@ name: Next.js CI/CD Pipeline
 on:
   push:
     branches:
-      - develop
+      - feature/cicd
 
 jobs:
   build:
@@ -48,7 +48,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}:dev
+          tags: aida0/gitfolio_front:dev
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }}
@@ -83,13 +83,16 @@ jobs:
           curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
           sudo dpkg -i session-manager-plugin.deb
 
+      - name: Install expect
+        run: sudo apt-get install -y expect
+
       - name: Deploy using SSM Session
         run: |
-          aws ssm start-session \
+          unbuffer aws ssm start-session \
             --target "${{ steps.get-instance-id.outputs.instance_id }}" \
             --document-name AWS-StartInteractiveCommand \
             --parameters command="sudo -i && \
-              docker pull gitfolio_front:dev && \
+              docker pull aida0/gitfolio_front:dev && \
               docker stop gitfolio_front || true && \
               docker rm gitfolio_front || true && \
               docker run -d \
@@ -104,4 +107,4 @@ jobs:
                 -e MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }} \
                 -e RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }} \
                 -e NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }} \
-                ${{ secrets.DOCKER_REPO }}:dev"
+                aida0/gitfolio_front:dev"
