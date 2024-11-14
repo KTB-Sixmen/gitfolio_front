@@ -47,6 +47,8 @@ export function useResumeMutation() {
       return toast.promise(promise, {
         loading: "이력서 생성 중...",
         success: (success: any) => {
+          // console.log("성공");
+          queryClient.invalidateQueries({ queryKey: ["resume"] });
           return (
             <div className="flex justify-between items-center w-full">
               <div>이력서 등록에 성공하였습니다.</div>
@@ -69,7 +71,8 @@ export function useResumeMutation() {
       });
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["resume"] });
+      // console.log("성공");
+      // queryClient.invalidateQueries();
       // toast.custom((t) => (
       //   <div></div>
       // ));

@@ -40,5 +40,6 @@ export const useNotificationsQuery = () => {
     queryKey: ["notifications"],
     queryFn: () => getNotifications(accessToken!),
     refetchInterval: 60000, // 1분마다 polling
+    retry: 0,
   });
 };

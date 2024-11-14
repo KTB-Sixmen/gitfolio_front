@@ -27,75 +27,67 @@ import Link from "next/link";
 import CommunitySkeleton from "../_components/community-skeleton";
 import { PositionType, positionTypeMap, schoolTypeMap } from "@/app/types/type";
 import { useLikeMutation } from "../_hooks/useLikeMutation";
-// import { useLikeMutation } from "../_hooks/useLikeMutation2";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { debounce } from "lodash";
-import { useNotificationsQuery } from "../../_hooks/useNotificationQuery";
 
 export default function Community() {
   const searchParams = useSearchParams();
-  const pageParam = searchParams.get("page");
-  const page = pageParam ? parseInt(pageParam) : 1;
-
-  const [size, setsize] = useState(12);
-  const [filters, setFilters] = useState<ResumeFilter>({
-    // tags: [""],
-    position: "",
-    techStack: "",
-    schoolType: "",
-    sortOrder: "recent",
-    liked: "false",
-  });
-
   const router = useRouter();
+
+  const initialFilters: ResumeFilter = {
+    position: searchParams.get("position") || "",
+    techStack: searchParams.get("techStack") || "",
+    schoolType: searchParams.get("schoolType") || "",
+    sortOrder: searchParams.get("sortOrder") || "",
+    liked: searchParams.get("liked") || "false",
+  };
+
+  const initialPage = parseInt(searchParams.get("page") || "1");
+
+  const [filters, setFilters] = useState<ResumeFilter>(initialFilters);
+  const [page, setPage] = useState<number>(initialPage);
+  const [size, setsize] = useState(12);
+
   const { data: resumes, isLoading } = useResumeQuery(page, size, filters);
   const { mutate } = useLikeMutation(page, size, filters);
 
+  // useEffect(() => {
+  //   const newFilters: ResumeFilter = {
+  //     position: searchParams.get("position") || "",
+  //     techStack: searchParams.get("techStack") || "",
+  //     schoolType: searchParams.get("schoolType") || "",
+  //     sortOrder: searchParams.get("sortOrder") || "",
+  //     liked: searchParams.get("liked") || "false",
+  //   };
+  //   setFilters(newFilters);
+
+  //   const query = new URLSearchParams();
+  //   Object.entries(newFilters).forEach(([key, val]) => {
+  //     if (val) query.append(key, val as string);
+  //   });
+  //   query.append("page", page.toString());
+  //   // query.append("page", "1");
+  //   router.push(`/community?${query.toString()}`);
+  // }, [searchParams, router, page]);
+
   useEffect(() => {
-    const newFilters: ResumeFilter = {
-      position: searchParams.get("position") || "",
-      techStack: searchParams.get("techStack") || "",
-      schoolType: searchParams.get("schoolType") || "",
-      sortOrder: searchParams.get("sortOrder") || "",
-      liked: searchParams.get("liked") || "false",
-    };
-    setFilters(newFilters);
-
     const query = new URLSearchParams();
-    Object.entries(newFilters).forEach(([key, val]) => {
-      if (val) query.append(key, val as string);
+    Object.entries(filters).forEach(([key, val]) => {
+      if (val && val !== "false") query.append(key, val as string);
     });
-    query.append("page", "1");
-    router.push(`/community?${query.toString()}`);
-  }, [searchParams, router]);
-
-  // const handleHeartClick = useMemo(
-  //   () =>
-  //     debounce((resumeId: string) => {
-  //       mutate(resumeId);
-  //     }, 500),
-  //   [mutate],
-  // );
-
-  if (isLoading || !resumes) {
-    return <CommunitySkeleton size={size} />;
-  }
+    if (page > 1) {
+      query.append("page", page.toString());
+    }
+    router.push(`/community?${query.toString()}`, { scroll: false });
+  }, [filters, page, router]);
 
   const resetFilter = () => {
     setFilters({
-      // tag: [""],
       position: "",
       techStack: "",
       schoolType: "",
       sortOrder: "recent",
       liked: "false",
     });
-    router.push(`/community`);
+    setPage(1);
   };
 
   const handleFilterChange = (field: string, value: string) => {
@@ -105,27 +97,72 @@ export default function Community() {
       [field]: newValue,
     };
     setFilters(newFilters);
-
-    const query = new URLSearchParams();
-    Object.entries(newFilters).forEach(([key, val]) => {
-      if (val) {
-        query.append(key, val as string); // Include only non-empty filters
-      }
-    });
-    query.append("page", "1"); // Reset to page 1 when filter changes
-    router.push(`/community?${query.toString()}`);
+    setPage(1); // Reset to page 1 when filter changes
   };
 
   const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const buildQueryString = (filters: ResumeFilter, page: number) => {
     const query = new URLSearchParams();
     Object.entries(filters).forEach(([key, val]) => {
-      if (val) {
-        query.append(key, val as string);
-      }
+      if (val && val !== "false") query.append(key, val as string);
     });
-    query.append("page", newPage.toString());
-    router.push(`/community?${query.toString()}`); // 페이지 이동
+    if (page > 1) {
+      query.append("page", page.toString());
+    }
+    return `?${query.toString()}`;
   };
+
+  const generatePageNumbers = (currentPage: number, totalPages: number) => {
+    const maxPagesToShow = 5;
+    const pages: (number | string)[] = [];
+
+    if (totalPages <= maxPagesToShow) {
+      // Show all pages
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let startPage, endPage;
+
+      if (currentPage <= 3) {
+        startPage = 2;
+        endPage = 4;
+      } else if (currentPage >= totalPages - 2) {
+        startPage = totalPages - 3;
+        endPage = totalPages - 1;
+      } else {
+        startPage = currentPage - 1;
+        endPage = currentPage + 1;
+      }
+
+      pages.push(1);
+
+      if (startPage > 2) {
+        pages.push("left-ellipsis");
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+
+      if (endPage < totalPages - 1) {
+        pages.push("right-ellipsis");
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  if (isLoading || !resumes) {
+    return <CommunitySkeleton size={size} />;
+  }
+
+  const pageNumbers = generatePageNumbers(page, resumes.result.totalPages);
 
   return (
     <>
@@ -208,7 +245,8 @@ export default function Community() {
               <SelectContent>
                 <SelectItem value="all">정렬 없음</SelectItem>
                 <SelectItem value="recent">최신순</SelectItem>
-                <SelectItem value="relevant">관련성순</SelectItem>
+                <SelectItem value="like">좋아요 많은 순</SelectItem>
+                <SelectItem value="view">조회수 많은 순</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -300,7 +338,8 @@ export default function Community() {
                     </button>
                   </div>
                   <p className="mt-2 text-sm text-gray-600 whitespace-pre-line line-clamp-6">
-                    {resume.aboutMe}
+                    {/* {resume.aboutMe} */}
+                    {resume.aboutMe.replace(/\*/g, "")}
                   </p>
                 </div>
               </Link>
@@ -310,43 +349,36 @@ export default function Community() {
         <Pagination>
           <PaginationContent>
             <PaginationPrevious
-              href={`?page=${
-                resumes.result.currentPage > 0
-                  ? resumes.result.currentPage - 1
-                  : 1
-              }`}
-              onClick={() =>
-                resumes.result.currentPage > 0 &&
-                handlePageChange(resumes.result.currentPage - 1)
-              }
-              aria-disabled={resumes.result.currentPage === 0}
+              href={buildQueryString(filters, Math.max(page - 1, 1))}
+              onClick={() => handlePageChange(Math.max(page - 1, 1))}
+              aria-disabled={page === 1}
             />
-            {Array.from({ length: resumes.result.totalPages }).map(
-              (_, index) => (
-                <PaginationItem className="cursor-pointer" key={index}>
-                  <PaginationLink
-                    onClick={() => handlePageChange(index + 1)}
-                    href={`?page=${index + 1}`}
-                    className={
-                      index === resumes.result.currentPage ? "font-bold" : ""
-                    }
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ),
-            )}
+            {pageNumbers.map((pageNum, index) => {
+              if (pageNum === "left-ellipsis" || pageNum === "right-ellipsis") {
+                return <PaginationEllipsis key={index} />;
+              } else {
+                return (
+                  <PaginationItem className="cursor-pointer" key={index}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(pageNum as number)}
+                      href={buildQueryString(filters, pageNum as number)}
+                      className={pageNum === page ? "font-bold" : ""}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              }
+            })}
             <PaginationNext
               className="cursor-pointer"
               onClick={() =>
-                resumes.result.currentPage < resumes.result.totalPages - 1 &&
-                handlePageChange(resumes.result.currentPage + 1)
+                handlePageChange(Math.min(page + 1, resumes.result.totalPages))
               }
-              href={`?page=${
-                resumes.result.currentPage < resumes.result.totalPages - 1
-                  ? resumes.result.currentPage + 1
-                  : 1
-              }`}
+              href={buildQueryString(
+                filters,
+                Math.min(page + 1, resumes.result.totalPages),
+              )}
             />
           </PaginationContent>
         </Pagination>
