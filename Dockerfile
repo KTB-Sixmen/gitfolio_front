@@ -48,7 +48,7 @@ RUN addgroup -S -g 1001 nodejs && \
     chown -R nextjs:nodejs /app
 
 # Copy built artifacts from builder stage
-ㅇ
+
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
