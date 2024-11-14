@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1단계: 코드 체크아웃
+      # 1단계: 코드 체크아웃-테스트용 netlify 비활성화
       - name: Checkout code
         uses: actions/checkout@v3
 
