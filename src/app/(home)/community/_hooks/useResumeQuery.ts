@@ -136,6 +136,7 @@ interface ResumeDetail {
   certificates: Certificate[];
   activities: Activity[];
   links: Link[];
+  visibility: "PUBLIC" | "PRIVATE";
   likeCount: number;
   viewCount: number;
 }

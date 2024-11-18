@@ -24,6 +24,8 @@ import ResumeComment from "../../community/resumes/[resumeId]/_components/resume
 import { CornerDownRight } from "lucide-react";
 import PdfDownloadButton from "./_components/PdfDownloadButton";
 import Markdown from "react-markdown";
+import { Switch } from "@/components/ui/switch";
+import { useMyResumeVisibilityMutation } from "../_hooks/useMyResumeVisibilityMutation";
 
 type Props = {
   params: { resumeId: string };
@@ -32,14 +34,19 @@ type Props = {
 export default function Page({ params }: Props) {
   const resumeId = params.resumeId;
 
+  const { data: resume } = useResumeDetailQuery(resumeId);
+
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [selection, setSelection] = useState<string>(""); // getSelection을 위한 상태
   const [position, setPosition] = useState<Record<string, number>>();
   const [selectedText, setSelectedText] = useState<string>("");
   const [isPopOver, setIsPopOver] = useState<boolean>(false);
+  const [visibility, setVisibility] = useState<boolean>(
+    resume?.result.visibility === "PUBLIC" ? true : false,
+  );
 
-  const { data: resume } = useResumeDetailQuery(resumeId);
+  const { mutate } = useMyResumeVisibilityMutation(resumeId);
 
   const handleIconChange = (url: string) => {
     if (url.includes("github.com")) {
@@ -53,6 +60,11 @@ export default function Page({ params }: Props) {
     } else {
       return <Link />;
     }
+  };
+
+  const handleToggleVisibility = () => {
+    setVisibility(!visibility);
+    mutate(visibility ? "PUBLIC" : "PRIVATE");
   };
 
   // 마우스를 떼었을 때 발생
@@ -178,6 +190,18 @@ export default function Page({ params }: Props) {
       <div className="mr-[30%] items-center justify-center w-full h-full p-24 space-y-4 overflow-y-auto">
         <div className="flex w-[1000px] mr-[20%] justify-end">
           <PdfDownloadButton resume={resume} />
+        </div>
+        <div className="flex flex-row w-[1000px] mr-[20%] items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <div className="text-base">공개 여부 설정</div>
+            <div className="text-sm text-gray-400">
+              공개 여부에 체크하시면 커뮤니티에 회원님의 이력서가 공개됩니다!
+            </div>
+          </div>
+          <Switch
+            checked={visibility}
+            onCheckedChange={() => handleToggleVisibility()}
+          />
         </div>
         <div className="flex items-center justify-between w-[1000px] mr-[16%]">
           <div className="flex items-center justify-between gap-4 font-semibold text-blue-500 ">

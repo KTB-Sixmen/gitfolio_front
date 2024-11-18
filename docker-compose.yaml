@@ -4,15 +4,11 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    image: aida0/gitfolio_front:dev
-    container_name: gitfolio_front
+    image: aida0/gitfolio_front:test
     ports:
       - target: 3000
         published: 80
         protocol: tcp
       - target: 3000
         published: 443
-        protocol: tcp
-      - target: 3000
-        published: 5000
         protocol: tcp

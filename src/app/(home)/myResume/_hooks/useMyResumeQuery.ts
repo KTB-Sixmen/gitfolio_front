@@ -10,16 +10,25 @@ interface MyResume {
   tags: string[] | null;
   viewCount: number;
   likeCount: number;
-  liked: boolean;
   isLiked: boolean;
+  visibility: "PUBLIC" | "PRIVATE";
   updatedAt: string;
 }
+
+interface Pageable {
+  currentPage: number;
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  content: MyResume[];
+}
+
 interface MyResumeResponse {
   time: string;
   status: string;
   code: string;
   message: string;
-  result: MyResume[];
+  result: Pageable;
 }
 const getMyResume = async (accessToken: string) => {
   const response = await fetch(`/api/resumes/me`, {

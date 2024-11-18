@@ -17,12 +17,15 @@ import { useResumeMutation } from "../_hooks/useResumeMutation";
 import RepositorySkeleton from "./repository-skeleton";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 export default function Repository() {
   const { accessToken } = useAuthStore((state) => state);
 
   const [value, setValue] = useState<Option[]>([]);
   const [requirements, setRequirements] = useState<string>("");
+  const [visibility, setVisibility] = useState<boolean>(false);
 
   const { data: repositories } = useRepositoryQuery();
   const { mutate } = useResumeMutation();
@@ -46,6 +49,7 @@ export default function Repository() {
     const data = {
       selectedRepo: value.map((repo) => repo.value),
       requirements: requirements,
+      visibility: visibility ? "PUBLIC" : "PRIVATE",
     };
     mutate({ accessToken: accessToken!, data });
     // toast.message("You submitted the following values:", {
@@ -55,7 +59,6 @@ export default function Repository() {
     //     </pre>
     //   ),
     // });
-    // console.log(data);
   };
 
   const handleValueChange = (selectedOptions: Option[]) => {
@@ -101,9 +104,21 @@ export default function Repository() {
             onChange={(e) => setRequirements(e.target.value)}
             className="w-full rounded-md"
           />
+          <div className="flex flex-row items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <div className="text-base">공개 여부 설정</div>
+              <div className="text-sm text-gray-400">
+                공개 여부를 체크하시면 커뮤니티에 회원님의 이력서가 공개됩니다!
+              </div>
+            </div>
+            <Switch checked={visibility} onCheckedChange={setVisibility} />
+          </div>
         </CardContent>
       </Card>
-      <Button onClick={onSubmit} className="w-full">
+      <Button
+        onClick={onSubmit}
+        className="bg-blue-500 hover:bg-blue-400 w-full"
+      >
         이력서 만들러 가기
       </Button>
       <Link className="text-gray-400 underline" href={"/community"}>

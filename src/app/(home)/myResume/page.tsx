@@ -30,7 +30,7 @@ export default function Page() {
           <Plus />새 이력서 만들기
         </Link>
       </div>
-      {myResume.result.map((resume) => (
+      {myResume.result.content.map((resume) => (
         <div
           key={resume.resumeId}
           onClick={() => router.push(`/myResume/${resume.resumeId}`)}
