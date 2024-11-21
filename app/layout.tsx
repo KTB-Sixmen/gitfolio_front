@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
-import ReactQueryProviders from "../src/app/_components/ReactQueryProvider";
+import ReactQueryProviders from "@/app/providers/ReactQueryProvider";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",

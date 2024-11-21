@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns/format";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import { MonthRangePicker } from "@/components/ui/month-range-picker";
 import moment from "moment";
 
@@ -42,14 +42,14 @@ export default function CustomMonthRangePicker({ value, form, index }: Props) {
           variant={"outline"}
           className={cn(
             "w-[280px] justify-start text-left font-normal",
-            !dates && "text-muted-foreground"
+            !dates && "text-muted-foreground",
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {dates ? (
             `${format(dates.start, "yyyy.MM")} - ${format(
               dates.end,
-              "yyyy.MM"
+              "yyyy.MM",
             )}`
           ) : (
             <div>YYYY.MM - YYYY.MM</div>
