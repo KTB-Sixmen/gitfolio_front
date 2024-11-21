@@ -33,3 +33,7 @@ export const useAuthStore = create<AuthStoreInterface>((set) => ({
   accessToken: null,
   setAccessToken: (token) => set((state) => ({ accessToken: token })),
 }));
+
+export const getAccessToken = () => useAuthStore.getState().accessToken;
+export const setAccessToken = (accessToken: string) =>
+  useAuthStore.setState({ accessToken });

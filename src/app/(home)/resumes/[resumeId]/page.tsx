@@ -18,9 +18,9 @@ import {
 } from "@/app/types/type";
 import Tistory from "../../../../../../public/tistory.svg";
 import Notion from "../../../../../../public/notion.svg";
-import ResumeComment from "./_components/resume-comment";
-import ResumeSkeleton from "./_components/resume-skeleton";
 import Markdown from "react-markdown";
+import MyResumeSkeleton from "../../myResume/_components/my-resume-skeleton";
+import ResumeComment from "./_components/ResumeComment";
 
 type Props = {
   params: { resumeId: string };
@@ -48,7 +48,7 @@ export default function Page({ params }: Props) {
   };
 
   if (!resume) {
-    return <ResumeSkeleton />;
+    return <MyResumeSkeleton />;
   }
 
   const tags = resume.result.tags?.length

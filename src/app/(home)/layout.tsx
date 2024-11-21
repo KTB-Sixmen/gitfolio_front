@@ -16,29 +16,30 @@ export default function MainLayout({
     (state) => state,
   );
 
-  useEffect(() => {
-    const reissueAccessToken = async () => {
-      try {
-        const response = await fetch(`/api/auth/reissue`, {
-          method: "POST",
-          credentials: "include", // 쿠키가 필요하면 이 옵션을 사용
-        });
+  // useEffect(() => {
+  //   const reissueAccessToken = async () => {
+  //     try {
+  //       const response = await fetch(`/api/auth/reissue`, {
+  //         method: "POST",
+  //         credentials: "include", // 쿠키가 필요하면 이 옵션을 사용
+  //       });
 
-        if (response.ok) {
-          const data = await response.json();
-          const accessToken = data.accessToken;
-          // console.log(accessToken);
-          setAccessToken(accessToken);
-          setAuthentication(true);
-        } else {
-          console.error("Failed to reissue access token");
-        }
-      } catch (error) {
-        console.error("Error reissuing access token:", error);
-      }
-    };
-    reissueAccessToken();
-  }, []);
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         const accessToken = data.accessToken;
+  //         // console.log(accessToken);
+  //         setAccessToken(accessToken);
+  //         setAuthentication(true);
+  //       } else {
+  //         console.error("Failed to reissue access token");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error reissuing access token:", error);
+  //     }
+  //   };
+  //   reissueAccessToken();
+  // }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />

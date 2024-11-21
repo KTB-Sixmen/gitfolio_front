@@ -4,13 +4,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
-import { useResumeCommentQuery } from "../_hooks/useResumeComment";
-import { useResumeCommentCreate } from "../_hooks/useResumeCommentCreate";
 import { useState } from "react";
-import { useResumeCommentDelete } from "../_hooks/useResumeCommentDelete";
-import CommentDeleteModal from "./comment-delete-modal";
 import { Button } from "@/components/ui/button";
 import { useProfileQuery } from "@/app/(home)/onboarding/_hooks/useProfileQuery";
+import { useResumeCommentQuery } from "../_hooks/useResumeComment";
+import { useResumeCommentCreate } from "../_hooks/useResumeCommentCreate";
+import { useResumeCommentDelete } from "../_hooks/useResumeCommentDelete";
+import CommentDeleteModal from "./CommentDeleteModal";
 
 type Props = {
   resumeId: string;

@@ -70,7 +70,6 @@ export const useResumeQuery = (page: number, size: number, filters: any) => {
   return useQuery<ResumeResponse>({
     queryKey: ["resume", page, size, filters],
     queryFn: () => getResume(accessToken, page, size, filters),
-    enabled: !!accessToken,
   });
 };
 
