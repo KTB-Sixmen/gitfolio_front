@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import GITFOLIO_LOGO from "../../../../public/images/gitfolio-logo.png";
+import GITFOLIO_LOGO from "../../../public/images/gitfolio-logo.png";
 import Link from "next/link";
 import { useLogout } from "../_hooks/useLogout";
 import { useProfileQuery } from "../onboarding/_hooks/useProfileQuery";

@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useResumeCommentDelete } from "../_hooks/useResumeCommentDelete";
 import CommentDeleteModal from "./comment-delete-modal";
 import { Button } from "@/components/ui/button";
-import { useProfileQuery } from "@/app/(home)/onboarding/_hooks/useProfileQuery";
+import { useProfileQuery } from "../../../../onboarding/_hooks/useProfileQuery";
 
 type Props = {
   resumeId: string;

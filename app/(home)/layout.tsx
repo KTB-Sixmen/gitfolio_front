@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import Header from "./_components/header";
-import { useAuthStore } from "../store/useAuthStore";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
+import { useAuthStore } from "@/app/store/useAuthStore";
 config.autoAddCss = false;
 
 export default function MainLayout({

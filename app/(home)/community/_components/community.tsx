@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Heart, Plus, RefreshCw } from "lucide-react";
-import MAIN_BANNER from "../../../../../public/images/main-banner.png";
+import MAIN_BANNER from "../../../../public/images/main-banner.png";
 import { ResumeFilter, useResumeQuery } from "../_hooks/useResumeQuery";
 import { Button } from "@/components/ui/button";
 import {

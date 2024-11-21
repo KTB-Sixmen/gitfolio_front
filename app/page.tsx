@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import GITHUB_WHITE_LOGO from "../../public/images/github-mark-white.png";
-import LANDING_IMAGE from "../../public/images/langing-image.png";
-import GITFOLIO_LOGO from "../../public/images/gitfolio-logo.png";
+import GITHUB_WHITE_LOGO from "../public/images/github-mark-white.png";
+import LANDING_IMAGE from "../public/images/langing-image.png";
+import GITFOLIO_LOGO from "../public/images/gitfolio-logo.png";
 import Image from "next/image";
 
 export default function Home() {

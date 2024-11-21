@@ -16,8 +16,8 @@ import {
   WorkType,
   workTypeMap,
 } from "@/app/types/type";
-import Tistory from "../../../../../../public/tistory.svg";
-import Notion from "../../../../../../public/notion.svg";
+import Tistory from "../../../../../public/tistory.svg";
+import Notion from "../../../../../public/notion.svg";
 import ResumeComment from "./_components/resume-comment";
 import ResumeSkeleton from "./_components/resume-skeleton";
 import Markdown from "react-markdown";
