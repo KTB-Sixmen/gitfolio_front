@@ -16,20 +16,17 @@ import {
 import { Bell } from "lucide-react";
 import NotificationPopover from "./notification-popover";
 import { useNotificationsQuery } from "../_hooks/useNotificationQuery";
+import GithubButton from "@/shared/ui/GithubButton";
 
 export default function Header() {
   const { mutate } = useLogout();
   const { data: userProfile } = useProfileQuery();
 
-  if (!userProfile) {
-    return <Skeleton className="w-full h-6" />;
-  }
-
   return (
     <header className="fixed top-0 left-0 z-50 w-full h-16 p-4 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center  h-full gap-8 text-lg">
-          <Link href={"/community"}>
+          <Link href={"/"}>
             <Image
               alt="github_white_logo"
               src={GITFOLIO_LOGO}
@@ -56,13 +53,19 @@ export default function Header() {
             <button className="font-semibold hover:underline">채팅</button>
           </Link> */}
         </div>
-        <div className="flex items-center gap-6 ">
-          <NotificationPopover />
-          <HeaderPopover
-            avatarUrl={userProfile?.result.avatarUrl as string}
-            nickname={userProfile?.result.nickname!}
-            credit={1000}
-          />
+        <div className="flex items-center gap-6">
+          {userProfile ? (
+            <>
+              <NotificationPopover />
+              <HeaderPopover
+                avatarUrl={userProfile?.result.avatarUrl as string}
+                nickname={userProfile?.result.nickname!}
+                credit={1000}
+              />
+            </>
+          ) : (
+            <GithubButton />
+          )}
         </div>
       </div>
     </header>

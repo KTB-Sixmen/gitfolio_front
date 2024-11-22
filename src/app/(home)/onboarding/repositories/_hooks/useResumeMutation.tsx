@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import * as Sentry from "@sentry/nextjs";
 
 type OnboardingRequest = {
   accessToken: string;
@@ -26,13 +27,18 @@ export function useResumeMutation() {
         },
         credentials: "include",
         body: JSON.stringify(data),
-      }).then(async (response) => {
-        if (!response.ok) {
-          const errorData = await response.json();
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message ?? "에러가 발생했습니다.");
+          }
+          return response.json();
+        })
+        .catch((errorData) => {
+          Sentry.captureException(errorData);
           throw new Error(errorData.message ?? "에러가 발생했습니다.");
-        }
-        return response.json();
-      });
+        });
 
       // const promise = () =>
       //   new Promise((resolve) =>

@@ -16,11 +16,11 @@ import {
   WorkType,
   workTypeMap,
 } from "@/app/types/type";
-import Tistory from "../../../../../../public/tistory.svg";
-import Notion from "../../../../../../public/notion.svg";
-import ResumeComment from "./_components/resume-comment";
-import ResumeSkeleton from "./_components/resume-skeleton";
+import Tistory from "../../../../../public/tistory.svg";
+import Notion from "../../../../../public/notion.svg";
 import Markdown from "react-markdown";
+import ResumeComment from "./_components/ResumeComment";
+import ResumeSkeleton from "./_components/ResumeSkeleton";
 
 type Props = {
   params: { resumeId: string };

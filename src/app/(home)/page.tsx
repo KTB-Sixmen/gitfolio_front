@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import Community from "./_components/community";
-import CommunitySkeleton from "./_components/community-skeleton";
+import CommunitySkeleton from "./_components/CommunitySkeleton";
+import Community from "./_components/Community";
 
 export default function Page() {
   return (

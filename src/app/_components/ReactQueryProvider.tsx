@@ -20,7 +20,7 @@ export default function ReactQueryProviders({
           gcTime: 1000 * 60 * 60,
         },
       },
-    })
+    }),
   );
 
   return (

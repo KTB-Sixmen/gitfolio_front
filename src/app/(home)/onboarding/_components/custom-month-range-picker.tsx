@@ -42,14 +42,14 @@ export default function CustomMonthRangePicker({ value, form, index }: Props) {
           variant={"outline"}
           className={cn(
             "w-[280px] justify-start text-left font-normal",
-            !dates && "text-muted-foreground"
+            !dates && "text-muted-foreground",
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {dates ? (
             `${format(dates.start, "yyyy.MM")} - ${format(
               dates.end,
-              "yyyy.MM"
+              "yyyy.MM",
             )}`
           ) : (
             <div>YYYY.MM - YYYY.MM</div>

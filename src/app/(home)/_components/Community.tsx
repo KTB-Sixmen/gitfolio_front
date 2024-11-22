@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import { Heart, Plus, RefreshCw } from "lucide-react";
-import MAIN_BANNER from "../../../../../public/images/main-banner.png";
-import { ResumeFilter, useResumeQuery } from "../_hooks/useResumeQuery";
+import MAIN_BANNER from "../../../../public/images/main-banner.png";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,9 +23,10 @@ import {
 } from "@/components/ui/pagination";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import CommunitySkeleton from "../_components/community-skeleton";
 import { PositionType, positionTypeMap, schoolTypeMap } from "@/app/types/type";
+import { ResumeFilter, useResumeQuery } from "../_hooks/useResumeQuery";
 import { useLikeMutation } from "../_hooks/useLikeMutation";
+import CommunitySkeleton from "./CommunitySkeleton";
 
 export default function Community() {
   const searchParams = useSearchParams();
@@ -46,27 +46,12 @@ export default function Community() {
   const [page, setPage] = useState<number>(initialPage);
   const [size, setsize] = useState(12);
 
-  const { data: resumes, isLoading } = useResumeQuery(page, size, filters);
+  const {
+    data: resumes,
+    isLoading,
+    status,
+  } = useResumeQuery(page, size, filters);
   const { mutate } = useLikeMutation(page, size, filters);
-
-  // useEffect(() => {
-  //   const newFilters: ResumeFilter = {
-  //     position: searchParams.get("position") || "",
-  //     techStack: searchParams.get("techStack") || "",
-  //     schoolType: searchParams.get("schoolType") || "",
-  //     sortOrder: searchParams.get("sortOrder") || "",
-  //     liked: searchParams.get("liked") || "false",
-  //   };
-  //   setFilters(newFilters);
-
-  //   const query = new URLSearchParams();
-  //   Object.entries(newFilters).forEach(([key, val]) => {
-  //     if (val) query.append(key, val as string);
-  //   });
-  //   query.append("page", page.toString());
-  //   // query.append("page", "1");
-  //   router.push(`/community?${query.toString()}`);
-  // }, [searchParams, router, page]);
 
   useEffect(() => {
     const query = new URLSearchParams();
@@ -76,7 +61,7 @@ export default function Community() {
     if (page > 1) {
       query.append("page", page.toString());
     }
-    router.push(`/community?${query.toString()}`, { scroll: false });
+    router.push(`?${query.toString()}`, { scroll: false });
   }, [filters, page, router]);
 
   const resetFilter = () => {
@@ -158,7 +143,7 @@ export default function Community() {
     return pages;
   };
 
-  if (isLoading || !resumes) {
+  if (isLoading || status !== "success") {
     return <CommunitySkeleton size={size} />;
   }
 
@@ -283,7 +268,7 @@ export default function Community() {
           {resumes.result.content.map((resume, idx) => {
             return (
               <Link
-                href={`/community/resumes/${resume.resumeId}`}
+                href={`/resumes/${resume.resumeId}`}
                 key={resume.resumeId}
                 className="overflow-hidden transition-transform duration-500 ease-in-out transform border rounded-lg shadow-lg cursor-pointer hover:-translate-y-1"
               >
