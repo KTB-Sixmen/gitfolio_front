@@ -16,11 +16,11 @@ import {
   WorkType,
   workTypeMap,
 } from "@/app/types/type";
-import Tistory from "../../../../../../public/tistory.svg";
-import Notion from "../../../../../../public/notion.svg";
+import Tistory from "../../../../../public/tistory.svg";
+import Notion from "../../../../../public/notion.svg";
 import Markdown from "react-markdown";
-import MyResumeSkeleton from "../../myResume/_components/my-resume-skeleton";
 import ResumeComment from "./_components/ResumeComment";
+import ResumeSkeleton from "./_components/ResumeSkeleton";
 
 type Props = {
   params: { resumeId: string };
@@ -48,7 +48,7 @@ export default function Page({ params }: Props) {
   };
 
   if (!resume) {
-    return <MyResumeSkeleton />;
+    return <ResumeSkeleton />;
   }
 
   const tags = resume.result.tags?.length

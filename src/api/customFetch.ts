@@ -1,20 +1,23 @@
-// utils/customFetcher.js
-
-import { getAccessToken, useAuthStore } from "@/app/store/useAuthStore";
+import { useAuthStore } from "@/app/store/useAuthStore";
 
 async function refreshAccessToken() {
-  // 토큰 갱신 로직 구현
-  // 예: 새 accessToken을 받아오는 API 호출
-  const response = await fetch("/api/auth/refresh", { method: "POST" });
-  if (!response.ok) {
-    throw new Error("Failed to refresh token");
+  try {
+    const response = await fetch("/api/auth/reissue", { method: "POST" });
+    if (!response.ok) {
+      throw new Error("Failed to refresh token");
+    }
+    const data = await response.json();
+    return data.accessToken;
+  } catch (error) {
+    useAuthStore.setState({ accessToken: "" });
+    window.location.href = "/"; // '/'로 라우팅
+    return null;
   }
-  const data = await response.json();
-  return data.accessToken;
 }
 
 export async function customFetcher(url: string, options: any = {}) {
-  let accessToken = getAccessToken();
+  // let accessToken = getAccessToken();
+  let accessToken = useAuthStore.getState().accessToken;
 
   let headers = {
     ...options.headers,
