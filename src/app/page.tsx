@@ -1,15 +1,25 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import GITHUB_WHITE_LOGO from "../../public/images/github-mark-white.png";
 import LANDING_IMAGE from "../../public/images/langing-image.png";
 import GITFOLIO_LOGO from "../../public/images/gitfolio-logo.png";
 import Image from "next/image";
+import GithubButton from "./_components/GithubButton";
+import Link from "next/link";
+import { useAuthStore } from "./store/useAuthStore";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useReissue } from "./(home)/_hooks/useReissue";
 
 export default function Home() {
-  const handleGithubLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/github`;
-  };
+  const { authenticated } = useAuthStore((state) => state);
+  useReissue();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (authenticated) {
+      router.push("/community");
+    }
+  }, [authenticated, router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -24,16 +34,21 @@ export default function Home() {
           <div className="mb-6 text-blue-600">
             한 큐에 만드는 나만의 이력서, <strong>깃트폴리오</strong>
           </div>
-          <Button onClick={handleGithubLogin} className="flex gap-2">
-            <Image
-              alt="github_white_logo"
-              src={GITHUB_WHITE_LOGO}
-              width={20}
-              height={20}
-            />
-            <div className="font-semibold">깃허브로 로그인하기</div>
-          </Button>
-          <Image alt="github_white_logo" src={LANDING_IMAGE} width={1000} />
+          <GithubButton />
+          {!authenticated && (
+            <Link
+              href={"/community"}
+              className="text-gray-500 underline mt-4 cursor-pointer"
+            >
+              로그인하지 않고 구경하러 가기
+            </Link>
+          )}
+          <Image
+            alt="github_white_logo"
+            src={LANDING_IMAGE}
+            priority
+            width={800}
+          />
         </div>
       </main>
     </div>

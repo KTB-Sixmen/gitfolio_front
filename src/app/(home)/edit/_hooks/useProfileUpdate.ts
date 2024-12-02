@@ -1,9 +1,9 @@
+import customFetch from "@/app/api/customFetch";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type OnboardingRequest = {
-  accessToken: string;
   data: FormData;
 };
 
@@ -12,12 +12,9 @@ export function useProfileUpdate() {
 
   return useMutation({
     mutationKey: ["onboardingUpdate"],
-    mutationFn: async ({ accessToken, data }: OnboardingRequest) => {
-      const response = await fetch(`/api/members/me`, {
+    mutationFn: async ({ data }: OnboardingRequest) => {
+      const response = await customFetch(`/api/members/me`, {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
         credentials: "include",
         body: data,
       });
@@ -32,7 +29,8 @@ export function useProfileUpdate() {
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      // queryClient.invalidateQueries({ queryKey: ["profile"] });
+      window.location.reload();
       toast.success("정보 변경에 성공하였습니다.");
     },
     onError: (error: any) => {

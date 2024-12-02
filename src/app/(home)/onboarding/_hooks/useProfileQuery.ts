@@ -1,3 +1,4 @@
+import customFetch from "@/app/api/customFetch";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useQuery } from "@tanstack/react-query";
 
@@ -54,6 +55,8 @@ export interface ProfileResult {
   certificates: Certificate[];
   activities: Activity[];
   links: Link[];
+  paidPlan: string;
+  remainingCount: number;
 }
 
 interface ProfileApiResponse {
@@ -64,25 +67,22 @@ interface ProfileApiResponse {
   result: ProfileResult;
 }
 
-const getUserProfile = async (accessToken: string | null) => {
-  const response = await fetch(`/api/members/me`, {
+const getUserProfile = async () => {
+  const response = await customFetch(`/api/members/me`, {
     method: "GET",
     credentials: "include",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   });
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
   const data: ProfileApiResponse = await response.json();
+  useAuthStore.setState({ user: data.result });
+  useAuthStore.setState({ authenticated: true });
   return data || "";
 };
 export const useProfileQuery = () => {
-  const { accessToken } = useAuthStore((state) => state);
   return useQuery<ProfileApiResponse>({
     queryKey: ["profile"],
-    queryFn: () => getUserProfile(accessToken),
-    enabled: !!accessToken,
+    queryFn: () => getUserProfile(),
   });
 };

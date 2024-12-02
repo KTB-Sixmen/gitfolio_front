@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ReactQueryProviders from "./_components/ReactQueryProvider";
+import * as Sentry from "@sentry/nextjs";
+import Error from "./error";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -25,7 +27,11 @@ export default function RootLayout({
     <html lang="en" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className} antialiased`}>
         <Toaster richColors />
-        <ReactQueryProviders>{children}</ReactQueryProviders>
+        <ReactQueryProviders>
+          <Sentry.ErrorBoundary fallback={<Error />}>
+            {children}
+          </Sentry.ErrorBoundary>
+        </ReactQueryProviders>
       </body>
     </html>
   );

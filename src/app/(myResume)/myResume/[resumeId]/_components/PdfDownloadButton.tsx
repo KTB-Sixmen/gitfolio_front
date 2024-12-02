@@ -3,8 +3,8 @@ import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
 import { Button } from "@/components/ui/button";
 import ResumeDocument from "./ResumeDocument";
-import { ResumeDetailResponse } from "../../../community/_hooks/useResumeQuery";
 import { FileText } from "lucide-react";
+import { ResumeDetailResponse } from "@/app/(home)/community/_hooks/useResumeQuery";
 
 type Props = {
   resume: ResumeDetailResponse;

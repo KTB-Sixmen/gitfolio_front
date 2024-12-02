@@ -1,3 +1,4 @@
+import customFetch from "@/app/api/customFetch";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useQuery } from "@tanstack/react-query";
 
@@ -36,12 +37,7 @@ export interface ResumeResponse {
   result: ResumeResult;
 }
 
-const getResume = async (
-  accessToken: string | null,
-  page: number,
-  size: number,
-  filters: ResumeFilter,
-) => {
+const getResume = async (page: number, size: number, filters: ResumeFilter) => {
   const filterParams = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (value) {
@@ -49,28 +45,26 @@ const getResume = async (
     }
   });
 
-  const response = await fetch(
+  const response = await customFetch(
     `/api/resumes?page=${page - 1}&size=${size}&${filterParams.toString()}`,
     {
       method: "GET",
-      credentials: "include",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      // credentials: "include",
     },
   );
+
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    const errorData = await response.json();
+    throw new Error(errorData.message || "이력서 데이터를 가져올 수 없습니다.");
   }
+
   const data: ResumeResponse = await response.json();
-  return data || "";
+  return data;
 };
 export const useResumeQuery = (page: number, size: number, filters: any) => {
-  const { accessToken } = useAuthStore((state) => state);
   return useQuery<ResumeResponse>({
-    queryKey: ["resume", page, size, filters],
-    queryFn: () => getResume(accessToken, page, size, filters),
-    enabled: !!accessToken,
+    queryKey: ["resumes", page, size, filters],
+    queryFn: () => getResume(page, size, filters),
   });
 };
 
@@ -136,6 +130,7 @@ interface ResumeDetail {
   certificates: Certificate[];
   activities: Activity[];
   links: Link[];
+  visibility: "PUBLIC" | "PRIVATE";
   likeCount: number;
   viewCount: number;
 }
@@ -146,25 +141,23 @@ export interface ResumeDetailResponse {
   message: string;
   result: ResumeDetail;
 }
-const getOneResume = async (accessToken: string, resumeId: string) => {
-  const response = await fetch(`/api/resumes/${resumeId}`, {
+const getOneResume = async (resumeId: string) => {
+  const response = await customFetch(`/api/resumes/${resumeId}`, {
     method: "GET",
-    credentials: "include",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    // credentials: "include",
   });
+
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    const errorData = await response.json();
+    throw new Error(errorData.message || "이력서 데이터를 가져올 수 없습니다.");
   }
+
   const data: ResumeDetailResponse = await response.json();
-  return data || "";
+  return data;
 };
 export const useResumeDetailQuery = (resumeId: string) => {
-  const { accessToken } = useAuthStore((state) => state);
   return useQuery<ResumeDetailResponse>({
-    queryKey: ["resume", resumeId],
-    queryFn: () => getOneResume(accessToken!, resumeId),
-    enabled: !!accessToken,
+    queryKey: ["resumes", resumeId],
+    queryFn: () => getOneResume(resumeId),
   });
 };

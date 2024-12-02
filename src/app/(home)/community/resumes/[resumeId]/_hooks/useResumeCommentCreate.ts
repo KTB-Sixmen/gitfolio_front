@@ -1,3 +1,4 @@
+import customFetch from "@/app/api/customFetch";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -11,18 +12,16 @@ interface RequestDto {
 
 export function useResumeCommentCreate(resumeId: string) {
   const queryClient = useQueryClient();
-  const { accessToken } = useAuthStore((state) => state);
 
   return useMutation({
     mutationKey: ["resuemCommentCreate"],
     mutationFn: async ({ data }: RequestDto) => {
-      const response = await fetch(`/api/resumes/${resumeId}/comments`, {
+      const response = await customFetch(`/api/resumes/${resumeId}/comments`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
         },
-        credentials: "include",
         body: JSON.stringify(data),
       });
       if (!response.ok) {
@@ -35,9 +34,9 @@ export function useResumeCommentCreate(resumeId: string) {
 
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["resume", resumeId, "comments"],
+        queryKey: ["resumes", resumeId, "comments"],
       });
     },
     onError: (error: any) => {

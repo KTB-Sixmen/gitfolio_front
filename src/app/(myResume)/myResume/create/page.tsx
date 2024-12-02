@@ -1,4 +1,4 @@
-import Repository from "../../onboarding/repositories/_components/repository";
+import Repository from "@/app/(home)/onboarding/repositories/_components/repository";
 
 export default function Page() {
   return (

@@ -11,13 +11,13 @@ import {
   Svg,
 } from "@react-pdf/renderer";
 import { createTw } from "react-pdf-tailwind";
-import { ResumeDetailResponse } from "../../../community/_hooks/useResumeQuery";
 import {
   PositionType,
   positionTypeMap,
   WorkType,
   workTypeMap,
 } from "@/app/types/type";
+import { ResumeDetailResponse } from "@/app/(home)/community/_hooks/useResumeQuery";
 
 type FontWeight = "normal" | "bold" | "light" | undefined;
 

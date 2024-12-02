@@ -11,6 +11,7 @@ import { useResumeCommentDelete } from "../_hooks/useResumeCommentDelete";
 import CommentDeleteModal from "./comment-delete-modal";
 import { Button } from "@/components/ui/button";
 import { useProfileQuery } from "@/app/(home)/onboarding/_hooks/useProfileQuery";
+import ResumeCommentSkeleton from "./ResumeCommentSkeleton";
 
 type Props = {
   resumeId: string;
@@ -19,7 +20,7 @@ type Props = {
 export default function ResumeComment({ resumeId }: Props) {
   const [comment, setComment] = useState<string>("");
 
-  const { data: comments } = useResumeCommentQuery(resumeId);
+  const { data: comments, isLoading } = useResumeCommentQuery(resumeId);
   const { mutate } = useResumeCommentCreate(resumeId);
   const { mutate: deleteComment } = useResumeCommentDelete(resumeId);
   const { data: userProfile } = useProfileQuery();
@@ -35,8 +36,8 @@ export default function ResumeComment({ resumeId }: Props) {
     deleteComment(commentId);
   };
 
-  if (!comments) {
-    return <div>loading</div>;
+  if (isLoading) {
+    return <ResumeCommentSkeleton />;
   }
 
   return (
@@ -46,12 +47,12 @@ export default function ResumeComment({ resumeId }: Props) {
       </div>
       <div className="flex flex-col w-full h-full">
         <div className="px-10 py-6">
-          {comments.result.length === 0 ? (
+          {comments?.result.length === 0 ? (
             <p className="text-center text-muted-foreground">
               등록된 댓글이 없습니다.
             </p>
           ) : (
-            comments.result.map((comment, index) => (
+            comments?.result.map((comment, index) => (
               <div className="flex flex-col" key={comment.id}>
                 <div className="flex items-start w-full gap-3 p-4">
                   <Avatar className="w-12 h-12">
@@ -91,6 +92,11 @@ export default function ResumeComment({ resumeId }: Props) {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="댓글을 남겨주세요!"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                onSubmit();
+              }
+            }}
           />
           <Button
             onClick={() => onSubmit()}

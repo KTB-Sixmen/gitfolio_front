@@ -1,3 +1,4 @@
+import customFetch from "@/app/api/customFetch";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -9,14 +10,11 @@ export function useResumeCommentDelete(resumeId: string) {
   return useMutation({
     mutationKey: ["resuemCommentCreate"],
     mutationFn: async (commentId: number) => {
-      const response = await fetch(`/api/resumes/comments/${commentId}`, {
+      const response = await customFetch(`/api/resumes/comments/${commentId}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
         credentials: "include",
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw {
@@ -27,9 +25,9 @@ export function useResumeCommentDelete(resumeId: string) {
 
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["resume", resumeId, "comments"],
+        queryKey: ["resumes", resumeId, "comments"],
       });
     },
     onError: (error: any) => {

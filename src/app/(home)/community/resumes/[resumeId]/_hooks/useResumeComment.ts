@@ -1,3 +1,4 @@
+import customFetch from "@/app/api/customFetch";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useQuery } from "@tanstack/react-query";
 
@@ -20,23 +21,27 @@ interface ResumeCommentResponse {
   result: Result[];
 }
 const getResumeComment = async (accessToken: string, resumeId: string) => {
-  const response = await fetch(`/api/resumes/${resumeId}/comments`, {
+  const response = await customFetch(`/api/resumes/${resumeId}/comments`, {
     method: "GET",
     credentials: "include",
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    const errorData = await response.json();
+    throw new Error(errorData.message || "댓글 데이터를 가져올 수 없습니다.");
   }
+
   const data: ResumeCommentResponse = await response.json();
-  return data || "";
+
+  return data;
 };
 export const useResumeCommentQuery = (resumeId: string) => {
   const { accessToken } = useAuthStore((state) => state);
   return useQuery<ResumeCommentResponse>({
-    queryKey: ["resume", resumeId, "comments"],
+    queryKey: ["resumes", resumeId, "comments"],
     queryFn: () => getResumeComment(accessToken!, resumeId),
     enabled: !!accessToken,
   });

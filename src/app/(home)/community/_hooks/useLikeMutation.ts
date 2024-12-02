@@ -1,6 +1,7 @@
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ResumeFilter } from "./useResumeQuery";
+import customFetch from "@/app/api/customFetch";
 
 export function useLikeMutation(
   page: number,
@@ -14,36 +15,26 @@ export function useLikeMutation(
     mutationKey: ["likes"],
     retry: 0,
     mutationFn: async (resumeId: string) => {
-      const response = await fetch(`/api/resumes/${resumeId}/likes`, {
+      const response = await customFetch(`/api/resumes/${resumeId}/likes`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
         credentials: "include",
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw {
-          status: response.status,
-          message: errorData.message ?? "에러가 발생했습니다.",
-        };
-      }
 
       return response.json();
     },
     onMutate: async (resumeId) => {
       await queryClient.cancelQueries({
-        queryKey: ["resume", page, size, filters],
+        queryKey: ["resumes", page, size, filters],
       });
 
       const previousResumes = queryClient.getQueryData([
-        "resume",
+        "resumes",
         page,
         size,
         filters,
       ]);
 
-      queryClient.setQueryData(["resume", page, size, filters], (old: any) => {
+      queryClient.setQueryData(["resumes", page, size, filters], (old: any) => {
         return {
           ...old,
           result: {
@@ -59,17 +50,17 @@ export function useLikeMutation(
 
       return { previousResumes };
     },
-    onSuccess: (data) => {},
+    onSuccess: () => {},
     onError: (error: any, _, context: any) => {
       if (context?.previousResumes) {
         queryClient.setQueryData(
-          ["resume", page, size, filters],
+          ["resumes", page, size, filters],
           context.previousResumes,
         );
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["resume"] });
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
     },
   });
 }

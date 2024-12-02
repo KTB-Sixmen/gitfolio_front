@@ -6,16 +6,7 @@ import GITHUB_LOGO from "../../../../public/images/github-mark.png";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
-// import html2pdf from "html2pdf.js";
-import { toast } from "sonner";
 import { PencilLine } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useToggleStore } from "@/app/store/useToggleStore";
 
 type Props = {
   params: { resumeId: string };
@@ -65,7 +56,6 @@ export default function Page({ params }: Props) {
   }, []);
 
   const handlePopover = useCallback(() => {
-    console.log(selection);
     setSelectedText(selection as string); // `selection`이 있을 때만 `selectedText`를 설정
   }, [selection]);
 

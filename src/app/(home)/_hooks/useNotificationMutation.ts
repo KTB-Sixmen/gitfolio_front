@@ -1,27 +1,20 @@
-import { useAuthStore } from "@/app/store/useAuthStore";
+import customFetch from "@/app/api/customFetch";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-
-type NotificationRequest = {
-  notificationId: number;
-};
 
 export function useNotificationMutation() {
   const queryClient = useQueryClient();
 
-  const { accessToken } = useAuthStore((state) => state);
-
   return useMutation({
-    mutationKey: ["onboardingUpdate"],
+    mutationKey: ["notificationMutate"],
     mutationFn: async (notificationId: number) => {
-      const response = await fetch(`/api/notifications/${notificationId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+      const response = await customFetch(
+        `/api/notifications/${notificationId}`,
+        {
+          method: "GET",
+          credentials: "include",
         },
-        credentials: "include",
-      });
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {
@@ -32,7 +25,7 @@ export function useNotificationMutation() {
 
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (error: any) => {

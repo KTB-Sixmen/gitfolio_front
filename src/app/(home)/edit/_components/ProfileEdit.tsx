@@ -44,6 +44,7 @@ import { ProfileResult } from "../../onboarding/_hooks/useProfileQuery";
 import { EditProfileFormSchema } from "../_lib/schema";
 import CustomMonthRangePicker from "../../onboarding/_components/custom-month-range-picker";
 import { useProfileUpdate } from "../_hooks/useProfileUpdate";
+import { toast } from "sonner";
 
 type Props = {
   userProfile: ProfileResult;
@@ -94,7 +95,6 @@ export default function ProfileEdit({ userProfile }: Props) {
     mode: "onChange",
   });
 
-  const { accessToken } = useAuthStore((state) => state);
   const { mutate } = useProfileUpdate();
 
   const {
@@ -154,7 +154,9 @@ export default function ProfileEdit({ userProfile }: Props) {
       links: data.links,
     };
 
-    formData.append("imageFile", imageFile as Blob);
+    if (imageFile) {
+      formData.append("imageFile", imageFile as Blob);
+    }
     formData.append(
       "memberUpdateRequestDTO",
       new Blob([JSON.stringify(memberUpdateRequestDTO)], {
@@ -167,13 +169,14 @@ export default function ProfileEdit({ userProfile }: Props) {
         type: "application/json",
       }),
     );
-    formData.append("imageFile", imageFile as Blob);
 
-    mutate({ accessToken: accessToken!, data: formData });
+    mutate({ data: formData });
     // toast.message("You submitted the following values:", {
     //   description: (
     //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //       <code className="text-white">
+    //         {JSON.stringify(formData, null, 2)}
+    //       </code>
     //     </pre>
     //   ),
     // });
@@ -215,7 +218,7 @@ export default function ProfileEdit({ userProfile }: Props) {
 
   return (
     <div className="max-w-3xl p-4 mx-auto space-y-6">
-      <div className="text-center text-2xl font-bold">
+      <div className="text-2xl font-bold text-center">
         기본 정보(필수) / 추가 정보(선택) 입력
       </div>
       <div className="text-center">

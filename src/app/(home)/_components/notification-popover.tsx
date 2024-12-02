@@ -53,7 +53,7 @@ export default function NotificationPopover() {
                 <div className="flex items-center space-x-3">
                   <div className="flex-1">
                     <p className="text-sm">
-                      {getNotificationMessage(noti.type, "00")}
+                      {getNotificationMessage(noti.type, noti.senderNickname)}
                     </p>
                   </div>
                 </div>

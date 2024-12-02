@@ -1,3 +1,4 @@
+import customFetch from "@/app/api/customFetch";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -14,11 +15,8 @@ export function useOnboardingUpdate() {
   return useMutation({
     mutationKey: ["onboardingUpdate"],
     mutationFn: async ({ accessToken, data }: OnboardingRequest) => {
-      const response = await fetch(`/api/members/me`, {
+      const response = await customFetch(`/api/members/me`, {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
         credentials: "include",
         body: data,
       });
@@ -32,7 +30,7 @@ export function useOnboardingUpdate() {
 
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("정보 등록에 성공하였습니다.");
       router.push("/onboarding/repositories");
     },

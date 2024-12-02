@@ -46,27 +46,12 @@ export default function Community() {
   const [page, setPage] = useState<number>(initialPage);
   const [size, setsize] = useState(12);
 
-  const { data: resumes, isLoading } = useResumeQuery(page, size, filters);
+  const {
+    data: resumes,
+    isLoading,
+    status,
+  } = useResumeQuery(page, size, filters);
   const { mutate } = useLikeMutation(page, size, filters);
-
-  // useEffect(() => {
-  //   const newFilters: ResumeFilter = {
-  //     position: searchParams.get("position") || "",
-  //     techStack: searchParams.get("techStack") || "",
-  //     schoolType: searchParams.get("schoolType") || "",
-  //     sortOrder: searchParams.get("sortOrder") || "",
-  //     liked: searchParams.get("liked") || "false",
-  //   };
-  //   setFilters(newFilters);
-
-  //   const query = new URLSearchParams();
-  //   Object.entries(newFilters).forEach(([key, val]) => {
-  //     if (val) query.append(key, val as string);
-  //   });
-  //   query.append("page", page.toString());
-  //   // query.append("page", "1");
-  //   router.push(`/community?${query.toString()}`);
-  // }, [searchParams, router, page]);
 
   useEffect(() => {
     const query = new URLSearchParams();
@@ -76,7 +61,7 @@ export default function Community() {
     if (page > 1) {
       query.append("page", page.toString());
     }
-    router.push(`/community?${query.toString()}`, { scroll: false });
+    router.push(`/community?${query.toString()}`);
   }, [filters, page, router]);
 
   const resetFilter = () => {
@@ -158,7 +143,7 @@ export default function Community() {
     return pages;
   };
 
-  if (isLoading || !resumes) {
+  if (isLoading || status !== "success") {
     return <CommunitySkeleton size={size} />;
   }
 
@@ -166,17 +151,17 @@ export default function Community() {
 
   return (
     <>
-      <Button
+      {/* <Button
         className="fixed bottom-8 pr-6 py-6 z-30 right-4 bg-blue-500 text-white gap-2 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
         onClick={() => {
-          router.push("/myResume/create", { scroll: false });
+          router.push("/myResume/create");
         }}
       >
         <Plus />
         <div className="text-base">새 이력서 만들기</div>
-      </Button>
+      </Button> */}
       <div className="w-full">
-        <Image src={MAIN_BANNER} alt="sdf" priority />
+        <Image className="" src={MAIN_BANNER} alt="sdf" priority />
       </div>
       <div className="container items-center px-4 py-8 mx-auto space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-2 p-4 bg-white rounded-lg shadow-lg">
