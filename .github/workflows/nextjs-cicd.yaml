@@ -39,6 +39,7 @@ jobs:
             --build-arg MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }} \
             --build-arg RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }} \
             --build-arg NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }} \
+            --build-arg PAYMENTS_SERVER_URL=${{ secrets.PAYMENTS_SERVER_URL }} \
             -t aida0/gitfolio_front:test .
 
       # 5단계: Docker 이미지 푸시
@@ -52,7 +53,7 @@ jobs:
         run: |
           INSTANCE_IDS=$(aws ec2 describe-instances \
             --region ap-northeast-2 \
-            --filters '[{"Name":"tag:Name","Values":["Gitfolio Frontend"]},{"Name":"tag:Service","Values":["front"]},{"Name":"tag:Environment","Values":["dev"]},{"Name":"tag:Type","Values":["ec2"]}]' \
+            --filters '[{"Name":"tag:Name","Values":["Gitfolio Frontend"]},{"Name":"tag:Service","Values":["front"]},{"Name":"tag:Environment","Values":["dev"]},{"Name":"tag:Type","Values":["ec2"]},{"Name":"instance-state-name","Values":["running"]}]' \
             --query 'Reservations[].Instances[].InstanceId' \
             --output text)
           echo "INSTANCE_IDS=$INSTANCE_IDS"
