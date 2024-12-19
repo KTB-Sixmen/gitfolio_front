@@ -27,6 +27,7 @@ import Link from "next/link";
 import CommunitySkeleton from "../_components/community-skeleton";
 import { PositionType, positionTypeMap, schoolTypeMap } from "@/app/types/type";
 import { useLikeMutation } from "../_hooks/useLikeMutation";
+import { useAuthStore } from "@/app/store/useAuthStore";
 
 export default function Community() {
   const searchParams = useSearchParams();
@@ -44,7 +45,9 @@ export default function Community() {
 
   const [filters, setFilters] = useState<ResumeFilter>(initialFilters);
   const [page, setPage] = useState<number>(initialPage);
-  const [size, setsize] = useState(12);
+  const [size] = useState(12);
+
+  const { accessToken } = useAuthStore((state) => state);
 
   const {
     data: resumes,
@@ -69,7 +72,7 @@ export default function Community() {
       position: "",
       techStack: "",
       schoolType: "",
-      sortOrder: "recent",
+      sortOrder: "",
       liked: "false",
     });
     setPage(1);
@@ -143,7 +146,7 @@ export default function Community() {
     return pages;
   };
 
-  if (isLoading || status !== "success") {
+  if (!resumes) {
     return <CommunitySkeleton size={size} />;
   }
 
@@ -151,19 +154,23 @@ export default function Community() {
 
   return (
     <>
-      {/* <Button
-        className="fixed bottom-8 pr-6 py-6 z-30 right-4 bg-blue-500 text-white gap-2 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
-        onClick={() => {
-          router.push("/myResume/create");
-        }}
-      >
-        <Plus />
-        <div className="text-base">새 이력서 만들기</div>
-      </Button> */}
       <div className="w-full">
         <Image className="" src={MAIN_BANNER} alt="sdf" priority />
       </div>
       <div className="container items-center px-4 py-8 mx-auto space-y-8">
+        <div className="flex w-full justify-end">
+          {accessToken && (
+            <Button
+              className="pr-6 py-6 z-30 right-4 bg-blue-500 text-white gap-2 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
+              onClick={() => {
+                router.push("/myResume/create");
+              }}
+            >
+              <Plus />
+              <div className="text-base">새 이력서 만들기</div>
+            </Button>
+          )}
+        </div>
         <div className="flex flex-wrap items-center justify-between gap-2 p-4 bg-white rounded-lg shadow-lg">
           <div className="flex flex-wrap items-center gap-2">
             <Button

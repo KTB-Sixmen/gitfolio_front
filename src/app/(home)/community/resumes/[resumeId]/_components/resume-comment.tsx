@@ -12,6 +12,7 @@ import CommentDeleteModal from "./comment-delete-modal";
 import { Button } from "@/components/ui/button";
 import { useProfileQuery } from "@/app/(home)/onboarding/_hooks/useProfileQuery";
 import ResumeCommentSkeleton from "./ResumeCommentSkeleton";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 type Props = {
   resumeId: string;
@@ -21,7 +22,7 @@ export default function ResumeComment({ resumeId }: Props) {
   const [comment, setComment] = useState<string>("");
 
   const { data: comments, isLoading } = useResumeCommentQuery(resumeId);
-  const { mutate } = useResumeCommentCreate(resumeId);
+  const { mutate, isPending } = useResumeCommentCreate(resumeId);
   const { mutate: deleteComment } = useResumeCommentDelete(resumeId);
   const { data: userProfile } = useProfileQuery();
 
@@ -66,7 +67,7 @@ export default function ResumeComment({ resumeId }: Props) {
                       <p className="text-sm font-semibold">
                         {comment.nickname}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {format(
                           new Date(comment.updatedAt),
                           "yyyy. MM. dd. HH:mm",
@@ -92,18 +93,20 @@ export default function ResumeComment({ resumeId }: Props) {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="댓글을 남겨주세요!"
-            onKeyDown={(e) => {
+            onKeyDown={(e: any) => {
+              if (e.isComposing || e.keyCode === 229) return;
               if (e.key === "Enter") {
                 onSubmit();
               }
             }}
           />
-          <Button
+          <LoadingButton
+            loading={isPending}
             onClick={() => onSubmit()}
             className="p-2 px-4 text-white bg-blue-500 rounded-full cursor-pointer hover:bg-blue-400"
           >
             저장
-          </Button>
+          </LoadingButton>
         </div>
       </div>
     </div>

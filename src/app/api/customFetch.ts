@@ -68,6 +68,11 @@ const customFetch = async (url: string, options: RequestInit = {}) => {
       // 재발급 받은 토큰으로 동일 요청 재시도
       headers.Authorization = `Bearer ${accessToken}`;
       return fetch(url, { ...options, headers });
+    } else if (response.status === 403) {
+      // Throw an error with the status code
+      const error = new Error("Forbidden");
+      (error as any).status = 403;
+      throw error;
     } else if (response.status === 404) {
       window.location.href = "/community";
     }
@@ -75,6 +80,7 @@ const customFetch = async (url: string, options: RequestInit = {}) => {
     return response; // 정상 응답 반환
   } catch (error) {
     Sentry.captureException(error);
+    window.location.href = "/community";
     throw error;
   }
 };

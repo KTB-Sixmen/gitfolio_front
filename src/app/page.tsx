@@ -8,11 +8,9 @@ import Link from "next/link";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useReissue } from "./(home)/_hooks/useReissue";
 
 export default function Home() {
   const { authenticated } = useAuthStore((state) => state);
-  useReissue();
   const router = useRouter();
 
   useEffect(() => {

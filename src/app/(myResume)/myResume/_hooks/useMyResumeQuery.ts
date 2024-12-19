@@ -43,9 +43,8 @@ const getMyResume = async () => {
   return data;
 };
 export const useMyResumeQuery = () => {
-  const { accessToken } = useAuthStore((state) => state);
   return useQuery<MyResumeResponse>({
-    queryKey: ["resume", "me"],
+    queryKey: ["resumes", "me"],
     queryFn: () => getMyResume(),
   });
 };

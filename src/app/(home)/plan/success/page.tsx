@@ -1,8 +1,11 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export default function Page() {
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     (function () {
       // 예제 데이터를 카카오페이에서 받은 값으로 교체하세요.
@@ -19,8 +22,9 @@ export default function Page() {
 
       // 현재 창 닫기
       window.close();
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     })();
-  }, []);
+  }, [queryClient]);
 
   return (
     <div>

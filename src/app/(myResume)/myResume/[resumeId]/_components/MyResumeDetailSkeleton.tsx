@@ -3,22 +3,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MyResumeDetailSkeleton() {
   return (
-    <div className="relative w-full h-full">
-      <div className="flex h-full">
+    <div className="flex flex-col w-full h-full justify-center items-center p-24">
+      <div className="flex justify-center max-w-[982px] w-full  h-full">
         {/* 메인 콘텐츠 */}
-        <main className="items-center justify-center flex-1 p-12 mx-auto overflow-y-auto custom-scrollbar">
+        <main className="items-center justify-center flex-1 mx-auto overflow-y-auto custom-scrollbar">
           <div className="flex flex-col items-center justify-center w-full space-y-4">
-            <div className="flex justify-end w-full max-w-[982px]">
+            <div className="flex justify-end w-full ">
               <Skeleton className="h-10 w-40" />
             </div>
-            <div className="flex flex-row items-center max-w-[982px] w-full justify-between p-4 border rounded-lg">
+            <div className="flex flex-row items-center w-full justify-between p-4 border rounded-lg">
               <div className="space-y-0.5 w-2/3">
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-4 w-64" />
               </div>
               <Skeleton className="h-8 w-12 rounded-full" />
             </div>
-            <div className="flex items-center justify-between max-w-[982px] w-full ">
+            <div className="flex items-center justify-betweenw-full ">
               <Skeleton className="h-6 w-1/4" />
               <div className="flex gap-2">
                 <Skeleton className="h-6 w-10 rounded-full" />
@@ -26,7 +26,7 @@ export default function MyResumeDetailSkeleton() {
               </div>
             </div>
 
-            <div className="px-20 space-y-10 border border-gray-300 rounded-lg p-14 max-w-[982px] w-full">
+            <div className="px-20 space-y-10 border border-gray-300 rounded-lg p-14 w-full">
               <div className="flex flex-row">
                 <div className="flex flex-col flex-grow">
                   <Skeleton className="h-10 w-1/2 mb-4" />
@@ -78,7 +78,7 @@ export default function MyResumeDetailSkeleton() {
         </main>
 
         {/* 사이드바 */}
-        <aside className="hidden lg:flex flex-col justify-between w-[300px] h-full p-4 border-l bg-white border-gray-300 shadow-lg">
+        {/* <aside className="hidden lg:flex flex-col justify-between w-[300px] h-full p-4 border-l bg-white border-gray-300 shadow-lg">
           <div>
             <div className="mb-4 text-lg font-bold text-center">
               <Skeleton className="h-4 w-40 mx-auto" />
@@ -98,7 +98,7 @@ export default function MyResumeDetailSkeleton() {
             <Skeleton className="h-8 w-full" />
             <Skeleton className="h-8 w-2/3" />
           </div>
-        </aside>
+        </aside> */}
       </div>
     </div>
   );

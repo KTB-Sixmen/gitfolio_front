@@ -10,8 +10,7 @@ import Link from "next/link";
 import { useLogout } from "../_hooks/useLogout";
 import { BadgeDollarSign, LogOut, PencilLine } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useRef, useState } from "react";
-import useOnClickOutside from "../_hooks/useOnClickOutside";
+import { useState } from "react";
 
 type Props = {
   avatarUrl: string;
@@ -27,7 +26,11 @@ export default function HeaderPopover({ avatarUrl, nickname }: Props) {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild className="cursor-pointer">
         <Avatar>
-          <AvatarImage src={avatarUrl} alt="Profile Image" />
+          <AvatarImage
+            className="object-cover"
+            src={avatarUrl}
+            alt="Profile Image"
+          />
         </Avatar>
       </PopoverTrigger>
       <PopoverContent
@@ -37,7 +40,11 @@ export default function HeaderPopover({ avatarUrl, nickname }: Props) {
         <div className="flex flex-col text-sm font-medium items-center">
           <div className="flex w-full justify-center gap-4 pr-2 items-center mb-2">
             <Avatar>
-              <AvatarImage src={avatarUrl} alt="Profile Image" />
+              <AvatarImage
+                className="object-cover"
+                src={avatarUrl}
+                alt="Profile Image"
+              />
             </Avatar>
             <p className="text-lg font-semibold">{nickname}</p>
           </div>

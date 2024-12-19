@@ -38,24 +38,6 @@ export default function Header() {
                   내 이력서
                 </button>
               </Link>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Link
-                      className="text-base font-semibold hover:underline"
-                      href="#"
-                    >
-                      채팅
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-base">
-                    <p>준비중입니다!</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              {/* <Link href="#">
-                <button className="font-semibold hover:underline">채팅</button>
-              </Link> */}
             </>
           )}
         </div>

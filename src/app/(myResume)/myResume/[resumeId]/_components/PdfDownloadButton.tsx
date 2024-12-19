@@ -3,7 +3,7 @@ import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
 import { Button } from "@/components/ui/button";
 import ResumeDocument from "./ResumeDocument";
-import { FileText } from "lucide-react";
+import { Download } from "lucide-react";
 import { ResumeDetailResponse } from "@/app/(home)/community/_hooks/useResumeQuery";
 
 type Props = {
@@ -18,9 +18,12 @@ const PdfDownloadButton = ({ resume }: Props) => {
   };
 
   return (
-    <Button className="flex gap-2 bg-red-500 pr-6" onClick={downloadPdf}>
-      <FileText />
-      <div>pdf로 저장</div>
+    <Button
+      className="flex justify-between w-full gap-2 p-0 border-none shadow-none bg-white text-black font-normal hover:bg-gray-100"
+      onClick={downloadPdf}
+    >
+      <div className="text-left">pdf로 저장</div>
+      <Download size={18} color="blue" />
     </Button>
   );
 };

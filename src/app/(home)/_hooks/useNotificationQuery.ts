@@ -1,7 +1,7 @@
 import customFetch from "@/app/api/customFetch";
 import { useQuery } from "@tanstack/react-query";
 
-interface Notification {
+export interface INotification {
   notificationId: number;
   resumeId: string;
   senderId: number;
@@ -16,7 +16,7 @@ export interface NotificationResponse {
   status: string;
   code: string;
   message: string;
-  result: Notification[];
+  result: INotification[];
 }
 
 const getNotifications = async () => {

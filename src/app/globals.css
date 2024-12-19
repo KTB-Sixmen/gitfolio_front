@@ -1,3 +1,5 @@
+@import "highlight.js/styles/github.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -92,4 +94,36 @@ body {
   img {
     @apply inline-block;
   }
+}
+
+.hljs {
+  color: #94a3b8;
+}
+.hljs-string,
+.hljs-selector-class,
+.hljs-template-variable,
+.hljs-deletion {
+  color: #8b5cf6;
+}
+
+.hljs-comment {
+  opacity: 0.5;
+}
+
+.language-xml {
+  color: #94a3b8;
+}
+
+.hljs-tag,
+.hljs-title {
+  color: #14b8a6;
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #f47067;
+}
+
+.hljs-attr {
+  color: #a5b4fc;
 }

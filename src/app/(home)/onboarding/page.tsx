@@ -27,7 +27,7 @@ import {
   PlusCircle,
   Trash,
 } from "lucide-react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { z } from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,9 +45,9 @@ import { useAuthStore } from "@/app/store/useAuthStore";
 import OnboardingSkeleton from "./_components/onboarding-skeleton";
 import { useRepositoryQuery } from "./repositories/_hooks/useRepositoryQuery";
 import { positionTypeMap } from "@/app/types/type";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 export default function Page() {
-  // const [iconType, setIconType] = useState(<Link />);
   const [imageFile, setImageFile] = useState<File>();
   const [preview, setPreview] = useState<string>();
 
@@ -63,7 +63,7 @@ export default function Page() {
   });
 
   const { accessToken } = useAuthStore((state) => state);
-  const { mutate } = useOnboardingUpdate();
+  const { mutate, isPending } = useOnboardingUpdate();
   const { data: userProfile } = useProfileQuery();
 
   const {
@@ -189,7 +189,7 @@ export default function Page() {
   }
 
   return (
-    <div className="max-w-3xl p-4 mx-auto space-y-6">
+    <div className="flex flex-col w-full max-w-[800px] p-4 mx-auto space-y-6 px-10">
       <div className="text-center text-2xl font-bold">
         기본 정보(필수) / 추가 정보(선택) 입력
       </div>
@@ -1004,7 +1004,9 @@ export default function Page() {
           </Card>
 
           <div className="flex justify-end">
-            <Button className="px-8">다음</Button>
+            <LoadingButton loading={isPending} className="px-8">
+              다음
+            </LoadingButton>
           </div>
         </form>
       </Form>

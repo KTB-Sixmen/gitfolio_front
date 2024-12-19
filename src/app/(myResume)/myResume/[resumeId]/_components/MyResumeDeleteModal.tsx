@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -6,27 +8,28 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   onDelete: (resumeId: string) => void;
   resumeId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 };
 
-export default function MyResumeDeleteModal({ onDelete, resumeId }: Props) {
+export default function MyResumeDeleteModal({
+  onDelete,
+  resumeId,
+  open,
+  onOpenChange,
+}: Props) {
+  const router = useRouter();
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger
-        onClick={(e) => {
-          e.stopPropagation(); // 이벤트 전파 방지
-        }}
-      >
-        <Trash2 className="absolute top-4 right-4 w-6 h-6 text-red-500 rounded cursor-pointer hover:bg-gray-200 hover:bg-opacity-50" />
-      </AlertDialogTrigger>
-      <AlertDialogContent>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent autoFocus>
         <AlertDialogHeader>
           <AlertDialogTitle>정말 삭제하시겠습니까?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -46,6 +49,7 @@ export default function MyResumeDeleteModal({ onDelete, resumeId }: Props) {
             onClick={(e) => {
               e.stopPropagation();
               onDelete(resumeId);
+              router.push("/myResume");
             }}
           >
             삭제

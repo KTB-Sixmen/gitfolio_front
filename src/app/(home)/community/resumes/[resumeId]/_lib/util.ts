@@ -6,7 +6,7 @@ export const generateTabItems = (resume?: any) => {
   const tabItems = [];
 
   if (resume.result.aboutMe) {
-    tabItems.push({ label: "자기소개", target: "#selfIntroduction" });
+    tabItems.push({ label: "자기소개", target: "#aboutMe" });
   }
 
   if (resume.result.workExperiences?.length > 0) {

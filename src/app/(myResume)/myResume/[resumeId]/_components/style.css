@@ -1,0 +1,132 @@
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #181c1f;
+}
+
+.containerd {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-reflect: below 1px
+    linear-gradient(transparent, transparent, transparent, transparent, #000);
+}
+
+.cloud {
+  position: relative;
+  top: 50px;
+  width: 300px;
+  height: 100px;
+  background: #fff;
+  border-radius: 100px;
+  z-index: 10;
+  filter: drop-shadow(0 0 35px #fff);
+}
+
+.cloud::after {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  top: -50px;
+  left: 40px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 90px 0 0 30px #fff;
+}
+
+.text {
+  position: absolute;
+  top: 40px;
+  height: 20px;
+  line-height: 20px;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 30px #fff;
+  transform-origin: bottom;
+  animation: animate 2s linear forwards;
+}
+
+@keyframes animate {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  70% {
+    transform: translateY(290px) scale(1);
+  }
+  100% {
+    transform: translateY(290px) scale(0);
+  }
+} */
+
+/* *와 body 스타일 제거 */
+
+.containerd {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 180px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cloud {
+  position: relative;
+  width: 180px;
+  height: 60px;
+  background: #181c1f;
+  border-radius: 50px;
+  z-index: 10;
+  filter: drop-shadow(0 0 35px #181c1f);
+}
+
+.cloud::after {
+  content: "";
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  top: -25px;
+  left: 30px;
+  z-index: 20;
+  border-radius: 50%;
+  background: #181c1f;
+  box-shadow: 50px 0 0 10px #181c1f;
+}
+
+.text {
+  position: absolute;
+  top: 40px;
+  height: 20px;
+  line-height: 20px;
+  text-transform: uppercase;
+  color: #555;
+  text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 30px #fff;
+  transform-origin: bottom;
+  animation: animate 2s linear forwards;
+}
+
+@keyframes animate {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  70% {
+    transform: translateY(130px) scale(1);
+  }
+  100% {
+    transform: translateY(130px) scale(0);
+  }
+}

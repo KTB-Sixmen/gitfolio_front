@@ -28,7 +28,7 @@ export function useMyResumeVisibilityMutation(resumeId: string) {
     },
     onSuccess: (data) => {
       toast.success("이력서 공개 여부 설정이 바뀌었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["resume"] });
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
     },
     onError: (error: any) => {
       toast.error(error.message);
