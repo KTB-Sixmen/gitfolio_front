@@ -1,6 +1,7 @@
 import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',  // standalone 모드 활성화
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/i,
