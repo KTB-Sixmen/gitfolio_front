@@ -35,11 +35,19 @@ jobs:
           docker build \
             --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
             --build-arg NEXT_PUBLIC_S3_URL=${{ secrets.NEXT_PUBLIC_S3_URL }} \
+            --build-arg NEXT_PUBLIC_SERVICE_URL=${{ secrets.NEXT_PUBLIC_SERVICE_URL }} \
+            --build-arg NEXT_PUBLIC_AUTH_SERVER_URL=${{ secrets.NEXT_PUBLIC_AUTH_SERVER_URL }} \
+            --build-arg NEXT_PUBLIC_MEMBERS_SERVER_URL=${{ secrets.NEXT_PUBLIC_MEMBERS_SERVER_URL }} \
+            --build-arg NEXT_PUBLIC_RESUMES_SERVER_URL=${{ secrets.NEXT_PUBLIC_RESUMES_SERVER_URL }} \
+            --build-arg NEXT_PUBLIC_PAYMENTS_SERVER_URL=${{ secrets.NEXT_PUBLIC_PAYMENTS_SERVER_URL }} \
+            --build-arg NEXT_PUBLIC_NOTIFICATIONS_SERVER_URL=${{ secrets.NEXT_PUBLIC_NOTIFICATIONS_SERVER_URL }} \
             --build-arg AUTH_SERVER_URL=${{ secrets.AUTH_SERVER_URL }} \
             --build-arg MEMBERS_SERVER_URL=${{ secrets.MEMBERS_SERVER_URL }} \
             --build-arg RESUMES_SERVER_URL=${{ secrets.RESUMES_SERVER_URL }} \
             --build-arg NOTIFICATIONS_SERVER_URL=${{ secrets.NOTIFICATIONS_SERVER_URL }} \
             --build-arg PAYMENTS_SERVER_URL=${{ secrets.PAYMENTS_SERVER_URL }} \
+            --build-arg SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} \
+            --build-arg NEXT_PUBLIC_SENTRY_KEY=${{ secrets.NEXT_PUBLIC_SENTRY_KEY }} \
             -t aida0/gitfolio_front:test .
 
       # 5단계: Docker 이미지 푸시
