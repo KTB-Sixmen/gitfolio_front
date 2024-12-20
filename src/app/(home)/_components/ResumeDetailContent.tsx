@@ -104,9 +104,94 @@ export function ResumeDetailContent({ resume }: ResumeDetailContentProps) {
                   </div>
                   <div id="tour1-step2">{project.skillSet}</div>
                 </div>
-                <Markdown className="w-full max-w-full prose break-words prose-p:leading-relaxed prose-pre:p-0">
-                  {project.projectDescription}
-                </Markdown>
+
+                {/* template 별로 다른 데이터 구조를 보여줌 */}
+                {resume.template === "BASIC" && (
+                  <div className="space-y-2">
+                    <div className=" font-semibold">담당 업무</div>
+
+                    <ul className="list-disc pl-8 space-y-2">
+                      {project.roleAndTask.map(
+                        (task: string, taskIndex: number) => (
+                          <li key={taskIndex}>{task}</li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+                {resume.template === "STAR" && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className=" font-semibold">담당 업무</div>
+
+                      <ul className="list-disc pl-8 space-y-2">
+                        {project.roleAndTask.map(
+                          (task: string, taskIndex: number) => (
+                            <li key={taskIndex}>{task}</li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                    {/* STAR 정보 텍스트로 표시 */}
+                    <div className="space-y-2">
+                      <div className="font-semibold">트러블 슈팅</div>
+                      <ul className="pl-8 list-disc space-y-1">
+                        <li>
+                          <strong>Situation</strong>: {project.star.situation}
+                        </li>
+                        <li>
+                          <strong>Task</strong>: {project.star.task}
+                        </li>
+                        <li>
+                          <strong>Action</strong>: {project.star.action}
+                        </li>
+                        <li>
+                          <strong>Result</strong>: {project.star.result}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {resume.template === "GITFOLIO" && (
+                  <div className="space-y-4">
+                    {/* roleAndTask 리스트 */}
+                    <div className="space-y-2">
+                      <div className=" font-semibold">담당 업무</div>
+
+                      <ul className="list-disc pl-8 space-y-2">
+                        {project.roleAndTask.map(
+                          (task: string, taskIndex: number) => (
+                            <li key={taskIndex}>{task}</li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                    {/* troubleShooting 정보 텍스트로 표시 */}
+                    <div className="space-y-2">
+                      <div className="font-semibold">트러블 슈팅</div>
+                      <ul className="pl-8 list-disc space-y-1">
+                        <li>
+                          <strong>Problem</strong>:{" "}
+                          {project.troubleShooting.problem}
+                        </li>
+                        <li>
+                          <strong>Hypothesis</strong>:{" "}
+                          {project.troubleShooting.hypothesis}
+                        </li>
+                        <li>
+                          <strong>Try</strong>: {project.troubleShooting.tring}
+                        </li>
+                        <li>
+                          <strong>Result</strong>:{" "}
+                          {project.troubleShooting.result}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
                 {index < resume.projects.length - 1 && (
                   <Separator className="my-4 bg-gray-300" />
                 )}

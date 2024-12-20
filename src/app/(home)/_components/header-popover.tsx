@@ -8,24 +8,26 @@ import {
 } from "@/components/ui/popover";
 import Link from "next/link";
 import { useLogout } from "../_hooks/useLogout";
-import { BadgeDollarSign, LogOut, PencilLine } from "lucide-react";
+import { BadgeDollarSign, Crown, LogOut, PencilLine } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import Image from "next/image";
 
 type Props = {
   avatarUrl: string;
   nickname: string;
+  plan: string;
 };
 
-export default function HeaderPopover({ avatarUrl, nickname }: Props) {
+export default function HeaderPopover({ avatarUrl, nickname, plan }: Props) {
   const { mutate } = useLogout();
 
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild className="cursor-pointer">
-        <Avatar>
+      <PopoverTrigger asChild>
+        <Avatar className="relative cursor-pointer">
           <AvatarImage
             className="object-cover"
             src={avatarUrl}
@@ -38,7 +40,7 @@ export default function HeaderPopover({ avatarUrl, nickname }: Props) {
     after:absolute after:top-0 after:right-7 after:translate-y-[-100%] after:h-0 after:w-0 after:border-x-[8px] after:border-x-transparent after:border-b-[10px] after:border-b-white after:!visible after:!opacity-100"
       >
         <div className="flex flex-col text-sm font-medium items-center">
-          <div className="flex w-full justify-center gap-4 pr-2 items-center mb-2">
+          <div className="relative flex w-full justify-center gap-4 pr-2 items-center mb-2">
             <Avatar>
               <AvatarImage
                 className="object-cover"
@@ -47,6 +49,13 @@ export default function HeaderPopover({ avatarUrl, nickname }: Props) {
               />
             </Avatar>
             <p className="text-lg font-semibold">{nickname}</p>
+            {plan === "PRO" && (
+              <Crown
+                fill="#eab308"
+                size={20}
+                className="absolute left-3 -top-2  text-yellow-500 z-50"
+              />
+            )}
           </div>
           <Separator className="my-1" />
           <Link

@@ -10,6 +10,7 @@ export function useNotificationMutation() {
     mutationFn: async (notificationId: number) => {
       const response = await customFetch(
         `/api/notifications/${notificationId}`,
+        // `${process.env.NEXT_PUBLIC_NOTIFICATIONS_SERVER_URL}/api/notifications/${notificationId}`,
         {
           method: "GET",
           credentials: "include",

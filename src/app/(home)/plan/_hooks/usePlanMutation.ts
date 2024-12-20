@@ -1,5 +1,6 @@
 import customFetch from "@/app/api/customFetch";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export interface PaymentResponse {
@@ -19,16 +20,20 @@ export interface PaymentResponse {
 }
 
 export function usePlanMutation() {
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationKey: ["planMutate"],
     mutationFn: async (paidPlan: string) => {
-      const response = await customFetch(`/api/payments/ready`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify({ paidPlan }),
-      });
+      const response = await customFetch(
+        `/api/payments/ready`,
+        // `${process.env.NEXT_PUBLIC_PAYMENTS_SERVER_URL}/api/payments/ready`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify({ paidPlan }),
+        },
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {
@@ -40,16 +45,10 @@ export function usePlanMutation() {
       return response.json();
     },
     onSuccess: (data) => {
-      // 팝업창으로 next_redirect_pc_url 열기
       const redirectUrl = data.result.next_redirect_pc_url;
       if (redirectUrl) {
-        window.open(
-          redirectUrl,
-          "_blank",
-          "width=500,height=700,scrollbars=yes",
-        );
+        router.push(redirectUrl);
       }
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error: any) => {
       toast.error(error.message);

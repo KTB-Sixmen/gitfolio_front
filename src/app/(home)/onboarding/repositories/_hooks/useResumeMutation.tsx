@@ -19,14 +19,18 @@ export function useResumeMutation() {
   return useMutation({
     mutationKey: ["createResume"],
     mutationFn: async ({ data }: OnboardingRequest) => {
-      const promise = customFetch(`/api/resumes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const promise = customFetch(
+        `/api/resumes`,
+        // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(data),
         },
-        credentials: "include",
-        body: JSON.stringify(data),
-      }).then(async (response) => {
+      ).then(async (response) => {
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message ?? "에러가 발생했습니다.");

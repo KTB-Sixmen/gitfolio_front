@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface AuthStoreInterface {
   authenticated: boolean;
@@ -8,6 +7,7 @@ interface AuthStoreInterface {
   setUser: (user: any) => void;
   accessToken: string | null;
   setAccessToken: (finished: string) => void;
+  resetAuth: () => void;
 }
 
 export const useAuthStore = create<AuthStoreInterface>((set) => ({
@@ -17,4 +17,10 @@ export const useAuthStore = create<AuthStoreInterface>((set) => ({
   setUser: (user) => set({ user }),
   accessToken: null,
   setAccessToken: (token) => set((state) => ({ accessToken: token })),
+  resetAuth: () =>
+    set({
+      authenticated: false,
+      user: {},
+      accessToken: null,
+    }),
 }));

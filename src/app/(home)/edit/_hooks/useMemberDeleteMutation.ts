@@ -1,24 +1,25 @@
 import customFetch from "@/app/api/customFetch";
 import { useAuthStore } from "@/app/store/useAuthStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function useResumeCommentDelete(resumeId: string) {
-  const queryClient = useQueryClient();
-  const { accessToken } = useAuthStore((state) => state);
+export function useMemberDeleteMutation() {
+  const { resetAuth } = useAuthStore((state) => state);
+
+  const router = useRouter();
 
   return useMutation({
-    mutationKey: ["resuemCommentCreate"],
-    mutationFn: async (commentId: number) => {
+    mutationKey: ["memberDelete"],
+    mutationFn: async () => {
       const response = await customFetch(
-        `/api/resumes/comments/${commentId}`,
-        // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/comments/${commentId}`,
+        `/api/members/me`,
+        // `${process.env.NEXT_PUBLIC_MEMBERS_SERVER_URL}/api/members/me`,
         {
           method: "DELETE",
           credentials: "include",
         },
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         throw {
@@ -29,10 +30,9 @@ export function useResumeCommentDelete(resumeId: string) {
 
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["resumes", resumeId, "comments"],
-      });
+    onSuccess: (data) => {
+      resetAuth();
+      router.push("/");
     },
     onError: (error: any) => {
       toast.error(error.message);

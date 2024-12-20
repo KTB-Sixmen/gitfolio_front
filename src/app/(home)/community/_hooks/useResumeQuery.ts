@@ -47,9 +47,11 @@ const getResume = async (page: number, size: number, filters: ResumeFilter) => {
 
   const response = await customFetch(
     `/api/resumes?page=${page - 1}&size=${size}&${filterParams.toString()}`,
+    // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes?page=${
+    //   page - 1
+    // }&size=${size}&${filterParams.toString()}`,
     {
       method: "GET",
-      // credentials: "include",
     },
   );
 
@@ -109,13 +111,29 @@ interface Link {
   linkTitle: string;
   linkUrl: string;
 }
+interface Star {
+  situation: string;
+  task: string;
+  action: string;
+  result: string;
+}
+interface TroubleShooting {
+  problem: string;
+  hypothesis: string;
+  tring: string;
+  result: string;
+}
 interface Project {
+  projectDescription?: string;
+  // template: string;
   projectName: string;
   projectStartedAt: string;
   projectEndedAt: string;
   skillSet: string;
-  projectDescription: string;
   repoLink: string;
+  roleAndTask: string[];
+  star?: Star;
+  troubleShooting?: TroubleShooting;
 }
 
 export interface ResumeDetail {
@@ -127,6 +145,7 @@ export interface ResumeDetail {
   position: string;
   techStack: string[];
   aboutMe: string;
+  template: string;
   tags: string[] | null;
   workExperiences: WorkExperience[];
   educations: Education[];
@@ -146,9 +165,13 @@ export interface ResumeDetailResponse {
   result: ResumeDetail;
 }
 const getOneResume = async (resumeId: string) => {
-  const response = await customFetch(`/api/resumes/${resumeId}/community`, {
-    method: "GET",
-  });
+  const response = await customFetch(
+    `/api/resumes/${resumeId}/community`,
+    // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}/community`,
+    {
+      method: "GET",
+    },
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -171,9 +194,13 @@ export interface MyResumeDetailResponse extends ResumeDetailResponse {
   template: string;
 }
 const getMyResumeDetail = async (resumeId: string) => {
-  const response = await customFetch(`/api/resumes/${resumeId}/myResume`, {
-    method: "GET",
-  });
+  const response = await customFetch(
+    `/api/resumes/${resumeId}/myResume`,
+    // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}/myResume`,
+    {
+      method: "GET",
+    },
+  );
 
   if (!response.ok) {
     const errorData = await response.json();

@@ -12,10 +12,14 @@ export function useLogout() {
   return useMutation({
     mutationKey: ["logout"],
     mutationFn: async () => {
-      const response = await customFetch(`/api/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await customFetch(
+        `/api/auth/logout`,
+        // `${process.env.NEXT_PUBLIC_AUTH_SERVER_URL}/api/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {

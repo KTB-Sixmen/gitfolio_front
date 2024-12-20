@@ -1,14 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import "moment/locale/ko";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRepositoryQuery } from "../_hooks/useRepositoryQuery";
 import MultipleSelector, { Option } from "@/components/ui/multi-selector";
 import { useResumeMutation } from "../_hooks/useResumeMutation";
@@ -20,8 +14,6 @@ import Image from "next/image";
 import RESUME_TEMPLATE1 from "../../../../../../public/images/resume_template1.png";
 import RESUME_TEMPLATE2 from "../../../../../../public/images/resume_template2.png";
 import RESUME_TEMPLATE3 from "../../../../../../public/images/resume_template3.png";
-import { toast } from "sonner";
-import { TooltipArrow } from "@radix-ui/react-tooltip";
 
 const templateImages = {
   BASIC: RESUME_TEMPLATE1,
@@ -40,23 +32,11 @@ export default function Repository() {
     useState<keyof typeof templateImages>("BASIC");
   const [isHovering, setIsHovering] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [containerDimensions, setContainerDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { data: repositories } = useRepositoryQuery();
   const { mutate } = useResumeMutation();
-
-  useEffect(() => {
-    if (containerRef.current) {
-      setContainerDimensions({
-        width: containerRef.current.offsetWidth,
-        height: containerRef.current.offsetHeight,
-      });
-    }
-  }, []);
 
   if (!repositories) {
     return <RepositorySkeleton />;
@@ -81,13 +61,6 @@ export default function Repository() {
       template: selectedTemplate,
     };
     mutate({ data });
-    // toast.message("You submitted the following values:", {
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // });
   };
 
   const handleValueChange = (selectedOptions: Option[]) => {
@@ -128,7 +101,7 @@ export default function Repository() {
           />
           <Input
             type="text"
-            placeholder="더 나은 이력서를 만들기 위한 요청사항을 입력해주세요."
+            placeholder="더 나은 이력서를 만들기 위한 요청사항을 입력해주세요.(선택)"
             value={requirements}
             onChange={(e) => setRequirements(e.target.value)}
             className="w-full py-4 rounded-md"

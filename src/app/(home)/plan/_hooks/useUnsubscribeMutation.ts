@@ -16,10 +16,14 @@ export function useUnsubscribeMutation() {
   return useMutation({
     mutationKey: ["unsubscribe"],
     mutationFn: async () => {
-      const response = await customFetch(`/api/payments/terminate`, {
-        method: "PATCH",
-        credentials: "include",
-      });
+      const response = await customFetch(
+        `/api/payments/terminate`,
+        // `${process.env.NEXT_PUBLIC_PAYMENTS_SERVER_URL}/api/payments/terminate`,
+        {
+          method: "PATCH",
+          credentials: "include",
+        },
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {

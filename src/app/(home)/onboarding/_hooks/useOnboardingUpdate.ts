@@ -15,11 +15,15 @@ export function useOnboardingUpdate() {
   return useMutation({
     mutationKey: ["onboardingUpdate"],
     mutationFn: async ({ data }: OnboardingRequest) => {
-      const response = await customFetch(`/api/members/me`, {
-        method: "PUT",
-        credentials: "include",
-        body: data,
-      });
+      const response = await customFetch(
+        `/api/members/me`,
+        // `${process.env.NEXT_PUBLIC_MEMBERS_SERVER_URL}/api/members/me`,
+        {
+          method: "PUT",
+          credentials: "include",
+          body: data,
+        },
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {

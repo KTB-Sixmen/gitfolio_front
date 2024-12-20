@@ -1,24 +1,11 @@
 "use client";
 
-import Image from "next/image";
-import { Separator } from "@/components/ui/separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
-import { ArrowUp, EllipsisVertical, Sparkles, Trash2, X } from "lucide-react";
-import {
-  GraduationStatus,
-  graduationStatusMap,
-  PositionType,
-  positionTypeMap,
-  SchoolType,
-  schoolTypeMap,
-  WorkType,
-  workTypeMap,
-} from "@/app/types/type";
+import { ArrowUp, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CornerDownRight } from "lucide-react";
 import PdfDownloadButton from "./_components/PdfDownloadButton";
-import Markdown from "react-markdown";
 import { Switch } from "@/components/ui/switch";
 import { useVisibility } from "./hooks/useVisibility";
 import { useMyResumeDetailQuery } from "@/app/(home)/community/_hooks/useResumeQuery";
@@ -30,7 +17,6 @@ import { useResumeAIPatchMutation } from "./hooks/useResumeAIPatchMutation";
 import { LoadingButton } from "@/components/ui/loading-button";
 import AIResumePatchDialog from "./_components/AIResumePatchDialog";
 import useOpenDialogStore from "@/app/store/useDialogOpenStore";
-import { handleIconChange } from "@/app/_lib/util";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,12 +28,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import MyResumeDeleteModal from "./_components/MyResumeDeleteModal";
 import { useMyResumeDeleteMutation } from "../_hooks/useMyResuemDeleteMutation";
 import { useOnborda } from "onborda";
 import { ResumeDetailContent } from "@/app/(home)/_components/ResumeDetailContent";
 import Goorm from "./_components/Goorm";
-import { useMyResumePatchMutation } from "./hooks/useMyResumePatchMutation";
 
 type Props = {
   params: { resumeId: string };
@@ -70,14 +54,13 @@ export default function Page({ params }: Props) {
 
   const { data: resume, error } = useMyResumeDetailQuery(resumeId);
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  // const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const [requirement, setRequirement] = useState("");
   const [selectedText, setSelectedText] = useState<string>("");
   const [isPopOver, setIsPopOver] = useState<boolean>(false);
   const [modifiedResume, setModifiedResume] = useState<any>(null);
   const [position, setPosition] = useState<Record<string, number>>();
-  const [goormPosition, setGoormPosition] = useState<Record<string, number>>();
 
   const { open, setOpen } = useOpenDialogStore((state) => state);
 
@@ -123,10 +106,6 @@ export default function Page({ params }: Props) {
       y: rect.top + window.scrollY - 20,
       width: rect.width,
       height: rect.height,
-    });
-    setGoormPosition({
-      x: rect.left + rect.width / 2 - 150,
-      y: rect.top + window.scrollY - 400,
     });
   }, []);
 
@@ -175,7 +154,6 @@ export default function Page({ params }: Props) {
       selectedText,
       requirement,
     };
-    console.log(data);
 
     mutate(data, {
       onSuccess: (result) => {
@@ -210,6 +188,13 @@ export default function Page({ params }: Props) {
         setOpen={setOpen}
         resume={modifiedResume}
       />
+      {/* <MyResumeDeleteModal
+        onDelete={handleDelete}
+        resumeId={resumeId}
+        open={deleteModalOpen}
+        // onOpenChange={setDeleteModalOpen}
+        onOpenChange={(deleteModalOpen) => setDeleteModalOpen(deleteModalOpen)}
+      /> */}
       {isPopOver && (
         <div
           ref={popoverRef}
@@ -264,28 +249,38 @@ export default function Page({ params }: Props) {
                   <DropdownMenuLabel>내 이력서 관리</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <PdfDownloadButton resume={resume} />
+                    </DropdownMenuItem>
+                    {/* <DropdownMenuItem
+                      onClick={() => router.push(`/myResume/${resumeId}/edit`)}
+                      className="py-4"
+                    >
+                      직접 수정
+                      <DropdownMenuShortcut>
+                        <Pencil size={18} color="green" />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem
                       className="py-4"
-                      onClick={() => setDeleteModalOpen(true)}
+                      onClick={() => {
+                        const userConfirmed =
+                          confirm("내 이력서를 삭제하시겠습니까?");
+                        if (userConfirmed) {
+                          handleDelete(resumeId); // 삭제 처리
+                        }
+                      }}
                     >
                       내 이력서 삭제
                       <DropdownMenuShortcut>
                         <Trash2 size={18} color="red" />
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <PdfDownloadButton resume={resume} />
-                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <MyResumeDeleteModal
-              onDelete={handleDelete}
-              resumeId={resumeId}
-              open={deleteModalOpen}
-              onOpenChange={setDeleteModalOpen}
-            />
+
             <div
               id="tour1-step1"
               className="flex flex-row items-center w-full justify-between p-4 border rounded-lg"

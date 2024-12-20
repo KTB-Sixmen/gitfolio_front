@@ -19,6 +19,10 @@ export default function Header() {
   const { data: userProfile } = useProfileQuery();
   const { authenticated } = useAuthStore((state) => state);
 
+  if (!userProfile) {
+    return null;
+  }
+
   return (
     <header className="fixed top-0 left-0 z-50 items-center w-full h-16 px-4 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between h-full">
@@ -46,6 +50,7 @@ export default function Header() {
             <>
               <NotificationPopover />
               <HeaderPopover
+                plan={userProfile?.result.paidPlan!}
                 avatarUrl={userProfile?.result.avatarUrl as string}
                 nickname={userProfile?.result.nickname!}
               />

@@ -20,10 +20,14 @@ export interface NotificationResponse {
 }
 
 const getNotifications = async () => {
-  const response = await customFetch(`/api/notifications/me`, {
-    method: "GET",
-    credentials: "include",
-  });
+  const response = await customFetch(
+    `/api/notifications/me`,
+    // `${process.env.NEXT_PUBLIC_NOTIFICATIONS_SERVER_URL}/api/notifications/me`,
+    {
+      method: "GET",
+      credentials: "include",
+    },
+  );
 
   if (!response.ok) {
     const errorData = await response.json();

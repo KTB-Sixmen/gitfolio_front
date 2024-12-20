@@ -7,6 +7,9 @@ import imgVioletBlur from "../../../../../public/images/imgVioletBlur.png";
 import { PLANS } from "../_constants/constans";
 import { useProfileQuery } from "../../onboarding/_hooks/useProfileQuery";
 import FAQSection from "./FAQSection";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import confetti from "canvas-confetti";
 
 // 블러 이미지
 function BackgroundBlur() {
@@ -14,6 +17,7 @@ function BackgroundBlur() {
     <>
       <Image
         src={imgGreenBlur}
+        priority
         alt="Blur effect image 1"
         className="absolute w-1/3 -bottom-48 -left-40"
         width={916}
@@ -21,6 +25,7 @@ function BackgroundBlur() {
       />
       <Image
         src={imgVioletBlur}
+        priority
         alt="Blur effect image 2"
         className="absolute w-1/3 -top-10 -right-40"
         width={916}
@@ -31,6 +36,19 @@ function BackgroundBlur() {
 }
 
 export default function Plan() {
+  const searchParams = useSearchParams();
+  const isSuccess = searchParams.get("success");
+
+  useEffect(() => {
+    if (isSuccess === "true") {
+      confetti({
+        particleCount: 150,
+        spread: 60,
+        origin: { y: 0.6 },
+      });
+    }
+  }, [isSuccess]);
+
   const { data: userProfile } = useProfileQuery();
 
   return (

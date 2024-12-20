@@ -18,10 +18,14 @@ interface ApiResponse {
 }
 
 const getMyRepositories = async () => {
-  const response = await customFetch(`/api/members/myRepo`, {
-    method: "GET",
-    credentials: "include",
-  });
+  const response = await customFetch(
+    `/api/members/myRepo`,
+    // `${process.env.NEXT_PUBLIC_MEMBERS_SERVER_URL}/api/members/myRepo`,
+    {
+      method: "GET",
+      credentials: "include",
+    },
+  );
 
   await new Promise((resolve) => setTimeout(resolve, 2000));
 

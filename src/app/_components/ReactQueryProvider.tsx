@@ -1,7 +1,13 @@
 "use client";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+
+import {
+  QueryClientProvider,
+  QueryClient,
+  QueryCache,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 export default function ReactQueryProviders({
   children,
@@ -20,6 +26,12 @@ export default function ReactQueryProviders({
           gcTime: 1000 * 60 * 60,
         },
       },
+      // queryCache: new QueryCache({
+      //   onError: (error) => {
+      //     console.log("rq 에러");
+      //     Sentry.captureException(error);
+      //   },
+      // }),
     }),
   );
 

@@ -33,7 +33,7 @@ export function Footer() {
             </a>
             .
             <a
-              href={"https://www.gitfolio.site/terms-of-service"}
+              href={`${process.env.NEXT_PUBLIC_SERVICE_URL}/terms-of-service`}
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"

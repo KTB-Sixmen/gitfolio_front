@@ -1,5 +1,8 @@
 import customFetch from "@/app/api/customFetch";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useSuspenseInfiniteQuery,
+} from "@tanstack/react-query";
 
 interface MyResume {
   resumeId: string;
@@ -34,6 +37,7 @@ interface MyResumeResponse {
 const getMyResume = async ({ pageParam = 0 }): Promise<MyResumeResponse> => {
   const response = await customFetch(
     `/api/resumes/me?page=${pageParam}&size=6`,
+    // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/me?page=${pageParam}&size=6`,
     {
       method: "GET",
       credentials: "include",
@@ -45,7 +49,7 @@ const getMyResume = async ({ pageParam = 0 }): Promise<MyResumeResponse> => {
   }
 
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    throw new Error("내 이력서 불러오기 실패");
   }
 
   const data: MyResumeResponse = await response.json();
@@ -55,7 +59,6 @@ const getMyResume = async ({ pageParam = 0 }): Promise<MyResumeResponse> => {
 export const useMyResumeInfiniteQuery = () => {
   return useInfiniteQuery<MyResumeResponse>({
     queryKey: ["resumes", "me"],
-    // queryFn: () => getMyResume(),
     queryFn: ({ pageParam = 0 }) =>
       getMyResume({ pageParam: pageParam as number }),
     initialPageParam: 0,

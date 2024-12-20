@@ -17,6 +17,7 @@ import Image from "next/image";
 import moment from "moment";
 import "moment/locale/ko";
 import GITHUB_LOGO from "../../../public/images/github-mark.png";
+import ImageWithFallback from "./image-with-fallback";
 
 export interface Option {
   value: string;
@@ -279,6 +280,14 @@ const MultipleSelector = React.forwardRef<
       },
       [handleUnselect, selected],
     );
+
+    const getImageSrc = (topLanguage?: string) => {
+      const imagePath = topLanguage
+        ? `/images/languagesd/${topLanguage}.png`
+        : GITHUB_LOGO;
+
+      return imagePath || GITHUB_LOGO;
+    };
 
     useEffect(() => {
       if (open) {
@@ -621,14 +630,13 @@ const MultipleSelector = React.forwardRef<
                                   "cursor-default text-muted-foreground",
                               )}
                             >
-                              <Image
+                              <ImageWithFallback
                                 src={
                                   option.topLanguage
                                     ? `/images/languages/${option.topLanguage}.png`
                                     : GITHUB_LOGO
                                 }
-                                // src={imgSrc}
-                                alt="repo-logo"
+                                fallbackSrc={`/images/github-mark.png`}
                                 width={20}
                                 height={20}
                                 style={{ width: "auto", height: "auto" }}

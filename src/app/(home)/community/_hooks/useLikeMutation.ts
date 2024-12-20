@@ -15,10 +15,14 @@ export function useLikeMutation(
     mutationKey: ["likes"],
     retry: 0,
     mutationFn: async (resumeId: string) => {
-      const response = await customFetch(`/api/resumes/${resumeId}/likes`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await customFetch(
+        // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}/likes`,
+        `/api/resumes/${resumeId}/likes`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
 
       return response.json();
     },

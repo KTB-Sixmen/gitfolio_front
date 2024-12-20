@@ -21,13 +21,17 @@ interface ResumeCommentResponse {
   result: Result[];
 }
 const getResumeComment = async (accessToken: string, resumeId: string) => {
-  const response = await customFetch(`/api/resumes/${resumeId}/comments`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  const response = await customFetch(
+    `/api/resumes/${resumeId}/comments`,
+    // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}/comments`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
 
   if (!response.ok) {
     const errorData = await response.json();

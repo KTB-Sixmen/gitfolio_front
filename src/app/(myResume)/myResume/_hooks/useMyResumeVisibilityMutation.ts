@@ -10,6 +10,7 @@ export function useMyResumeVisibilityMutation(resumeId: string) {
     mutationFn: async (visibility: string) => {
       const response = await customFetch(
         `/api/resumes/${resumeId}/visibility`,
+        // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}/visibility`,
         {
           method: "PATCH",
           credentials: "include",

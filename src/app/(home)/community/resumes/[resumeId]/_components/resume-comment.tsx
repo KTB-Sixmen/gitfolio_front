@@ -37,7 +37,7 @@ export default function ResumeComment({ resumeId }: Props) {
     deleteComment(commentId);
   };
 
-  if (isLoading) {
+  if (!comments) {
     return <ResumeCommentSkeleton />;
   }
 
@@ -48,12 +48,12 @@ export default function ResumeComment({ resumeId }: Props) {
       </div>
       <div className="flex flex-col w-full h-full">
         <div className="px-10 py-6">
-          {comments?.result.length === 0 ? (
+          {comments.result.length === 0 ? (
             <p className="text-center text-muted-foreground">
               등록된 댓글이 없습니다.
             </p>
           ) : (
-            comments?.result.map((comment, index) => (
+            comments.result.map((comment, index) => (
               <div className="flex flex-col" key={comment.id}>
                 <div className="flex items-start w-full gap-3 p-4">
                   <Avatar className="w-12 h-12">

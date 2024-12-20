@@ -68,10 +68,14 @@ interface ProfileApiResponse {
 }
 
 const getUserProfile = async () => {
-  const response = await customFetch(`/api/members/me`, {
-    method: "GET",
-    credentials: "include",
-  });
+  const response = await customFetch(
+    `/api/members/me`,
+    // `${process.env.NEXT_PUBLIC_MEMBERS_SERVER_URL}/api/members/me`,
+    {
+      method: "GET",
+      credentials: "include",
+    },
+  );
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }

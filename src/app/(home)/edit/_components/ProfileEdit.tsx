@@ -37,14 +37,13 @@ import { Github } from "lucide-react";
 import Notion from "../../../../../public/notion.svg";
 import Tistory from "../../../../../public/tistory.svg";
 import Linkedin from "../../../../../public/linkedin.svg";
-import { useAuthStore } from "@/app/store/useAuthStore";
 import { positionTypeMap } from "@/app/types/type";
-import { useOnboardingUpdate } from "../../onboarding/_hooks/useOnboardingUpdate";
 import { ProfileResult } from "../../onboarding/_hooks/useProfileQuery";
 import { EditProfileFormSchema } from "../_lib/schema";
 import CustomMonthRangePicker from "../../onboarding/_components/custom-month-range-picker";
 import { useProfileUpdate } from "../_hooks/useProfileUpdate";
-import { toast } from "sonner";
+import { useMemberDeleteMutation } from "../_hooks/useMemberDeleteMutation";
+import MemberDeleteModal from "./MemberDeleteModal";
 
 type Props = {
   userProfile: ProfileResult;
@@ -57,10 +56,10 @@ export default function ProfileEdit({ userProfile }: Props) {
   const form = useForm<z.infer<typeof EditProfileFormSchema>>({
     resolver: zodResolver(EditProfileFormSchema),
     defaultValues: {
-      name: userProfile.name,
-      phoneNumber: userProfile.phoneNumber,
-      email: userProfile.email,
-      position: userProfile.position,
+      name: userProfile.name || "",
+      phoneNumber: userProfile.phoneNumber || "",
+      email: userProfile.email || "",
+      position: userProfile.position || "",
       workExperiences: userProfile.workExperiences || [
         {
           companyName: "",
@@ -138,6 +137,8 @@ export default function ProfileEdit({ userProfile }: Props) {
     Array(linksFields.length).fill(<Link />),
   );
 
+  const { mutate: memberDeleteMutate } = useMemberDeleteMutation();
+
   function onSubmit(data: z.infer<typeof EditProfileFormSchema>) {
     const formData = new FormData();
 
@@ -214,6 +215,10 @@ export default function ProfileEdit({ userProfile }: Props) {
       }
       return newIconTypes;
     });
+  };
+
+  const handleMemberDelete = () => {
+    memberDeleteMutate();
   };
 
   return (
@@ -340,22 +345,6 @@ export default function ProfileEdit({ userProfile }: Props) {
                         </FormItem>
                       )}
                     />
-                    {/* <FormField
-                      control={form.control}
-                      name="position"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>직군</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder="ex) 백엔드, 프론트엔드"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    /> */}
                   </div>
                 </div>
               </div>
@@ -1036,6 +1025,7 @@ export default function ProfileEdit({ userProfile }: Props) {
           </div>
         </form>
       </Form>
+      <MemberDeleteModal onDelete={handleMemberDelete} />
     </div>
   );
 }

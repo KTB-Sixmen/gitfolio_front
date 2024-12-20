@@ -16,11 +16,15 @@ export function useResumeAIPatchMutation(resumeId: string) {
       toast.info("AI가 이력서를 수정하기 시작했어요!", {
         position: "top-right",
       });
-      const response = await customFetch(`/api/resumes/${resumeId}`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
+      const response = await customFetch(
+        `/api/resumes/${resumeId}`,
+        // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(data),
+        },
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {

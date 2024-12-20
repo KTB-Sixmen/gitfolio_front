@@ -16,14 +16,18 @@ export function useResumeCommentCreate(resumeId: string) {
   return useMutation({
     mutationKey: ["resuemCommentCreate"],
     mutationFn: async ({ data }: RequestDto) => {
-      const response = await customFetch(`/api/resumes/${resumeId}/comments`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await customFetch(
+        `/api/resumes/${resumeId}/comments`,
+        // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}/comments`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {

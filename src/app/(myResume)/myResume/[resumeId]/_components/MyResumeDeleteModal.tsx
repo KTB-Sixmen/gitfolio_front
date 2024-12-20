@@ -37,13 +37,7 @@ export default function MyResumeDeleteModal({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            취소
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={() => {}}>취소</AlertDialogCancel>
           <AlertDialogAction
             className="bg-red-500"
             onClick={(e) => {

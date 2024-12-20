@@ -28,6 +28,8 @@ import CommunitySkeleton from "../_components/community-skeleton";
 import { PositionType, positionTypeMap, schoolTypeMap } from "@/app/types/type";
 import { useLikeMutation } from "../_hooks/useLikeMutation";
 import { useAuthStore } from "@/app/store/useAuthStore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
 
 export default function Community() {
   const searchParams = useSearchParams();
@@ -197,20 +199,6 @@ export default function Community() {
                 ))}
               </SelectContent>
             </Select>
-            {/* <Select
-              value={filters.techStack}
-              onValueChange={(value) => handleFilterChange("techStack", value)}
-            >
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="기술 스택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">모든 기술 스택</SelectItem>
-                <SelectItem value="React">React</SelectItem>
-                <SelectItem value="Node.js">Node.js</SelectItem>
-                <SelectItem value="Python">Python</SelectItem>
-              </SelectContent>
-            </Select> */}
             <Select
               value={filters.schoolType}
               onValueChange={(value) => handleFilterChange("schoolType", value)}
@@ -242,19 +230,7 @@ export default function Community() {
               </SelectContent>
             </Select>
           </div>
-          {/* <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger className="flex gap-2 p-2 px-4 items-center text-gray-500 border border-gray-400 rounded-2xl">
-                <Heart className="w-4 h-4" />
-                <div className="">좋아요 누른 이력서만 보기</div>
-              </TooltipTrigger>
-              <TooltipContent className="text-base">
-                <p>준비중입니다!</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
           <Button
-            // className="flex gap-2 p-2 px-4 items-center bg-white hover:bg-gray-200 text-gray-500 border border-gray-400 rounded-2xl"
             className={`flex gap-2 p-2 px-4 items-center rounded-2xl ${
               filters.liked === "true"
                 ? "bg-red-500 hover:bg-red-600 text-white"
@@ -279,7 +255,7 @@ export default function Community() {
                 key={resume.resumeId}
                 className="overflow-hidden transition-transform duration-500 ease-in-out transform border rounded-lg shadow-lg cursor-pointer hover:-translate-y-1"
               >
-                <div className="p-2">
+                <div className="flex justify-between items-center p-2">
                   <div className="flex items-center space-x-2 text-xs text-gray-500">
                     {(resume.tags && resume.tags.length > 0
                       ? resume.tags
@@ -292,6 +268,16 @@ export default function Community() {
                         {tag}
                       </span>
                     ))}
+                  </div>
+                  <div className="flex gap-2 text-xs">
+                    <div className="flex items-center gap-1 p-1 px-2 border border-gray-300 rounded-full">
+                      <FontAwesomeIcon color="gray" icon={faHeart} />
+                      <div>{resume.likeCount}</div>
+                    </div>
+                    <div className="flex items-center gap-1 p-1 px-2 border rounded-full border-gray-3000">
+                      <FontAwesomeIcon color="gray" icon={faEye} />
+                      <div>{resume.viewCount}</div>
+                    </div>
                   </div>
                 </div>
                 <Image

@@ -5,8 +5,6 @@ import { toast } from "sonner";
 
 interface MyResumePatchBody {
   data: FormData;
-  // updateResumeRequestDTO: any;
-  // imageFile?: string;
 }
 
 export function useMyResumePatchMutation(resumeId: string) {
@@ -16,11 +14,15 @@ export function useMyResumePatchMutation(resumeId: string) {
   return useMutation({
     mutationKey: ["myResumePatch"],
     mutationFn: async ({ data }: MyResumePatchBody) => {
-      const response = await customFetch(`/api/resumes/${resumeId}`, {
-        method: "PUT",
-        credentials: "include",
-        body: data,
-      });
+      const response = await customFetch(
+        `/api/resumes/${resumeId}?isAiFixed=true`,
+        // `${process.env.NEXT_PUBLIC_RESUMES_SERVER_URL}/api/resumes/${resumeId}?isAiFixed=true`,
+        {
+          method: "PUT",
+          credentials: "include",
+          body: data,
+        },
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw {

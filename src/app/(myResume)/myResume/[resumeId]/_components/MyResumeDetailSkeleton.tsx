@@ -9,7 +9,7 @@ export default function MyResumeDetailSkeleton() {
         <main className="items-center justify-center flex-1 mx-auto overflow-y-auto custom-scrollbar">
           <div className="flex flex-col items-center justify-center w-full space-y-4">
             <div className="flex justify-end w-full ">
-              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-10 w-12" />
             </div>
             <div className="flex flex-row items-center w-full justify-between p-4 border rounded-lg">
               <div className="space-y-0.5 w-2/3">
