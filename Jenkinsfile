@@ -49,40 +49,40 @@ pipeline {
 
         stage('Docker 이미지 빌드 및 푸시') {
             steps {
-                    script {
-                        def imageTag = "${ECR_REGISTRY}/gitfolio/front:${DOCKER_TAG}"
+                script {
+                    def imageTag = "${ECR_REGISTRY}/gitfolio/front:${DOCKER_TAG}"
 
-                        // 환경변수 파일에서 변수들을 추출
-                        def envVars = readFile(ENV_FILE).trim().split('\n')
-                        def buildArgs = ''
+                    // 환경변수 파일에서 변수들을 추출
+                    def envVars = readFile(ENV_FILE).trim().split('\n')
+                    def buildArgs = ''
 
-                        // 각 환경변수를 Docker build args로 변환
-                        envVars.each { line ->
-                            if (line && !line.startsWith('#')) {
-                                def (key, value) = line.split('=', 2)
-                                buildArgs += " --build-arg ${key}=${value}"
-                            }
+                    // 각 환경변수를 Docker build args로 변환
+                    envVars.each { line ->
+                        if (line && !line.startsWith('#')) {
+                            def (key, value) = line.split('=', 2)
+                            buildArgs += " --build-arg ${key}=${value}"
                         }
-
-                        sh """
-                            # Docker 빌드
-                            docker build \\
-                                -f Dockerfile \\
-                                -t ${imageTag} \\
-                                --platform linux/amd64 \\
-                                ${buildArgs} \\
-                                .
-
-                            # 빌드된 이미지의 환경변수 확인
-                            echo "===== 이미지 환경변수 확인 ====="
-                            docker run --rm ${imageTag} env | sort
-
-                            # 이미지 푸시
-                            docker push ${imageTag}
-                        """
                     }
+
+                    sh """
+                        # Docker 빌드
+                        docker build \\
+                            -f Dockerfile \\
+                            -t ${imageTag} \\
+                            --platform linux/amd64 \\
+                            ${buildArgs} \\
+                            .
+
+                        # 환경변수 확인
+                        echo "===== 이미지 환경변수 확인 ====="
+                        docker run --rm ${imageTag} env | sort
+
+                        # 이미지 푸시
+                        docker push ${imageTag}
+                    """
                 }
             }
+        }
     }
 
     post {
