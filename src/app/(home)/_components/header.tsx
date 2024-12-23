@@ -5,12 +5,6 @@ import GITFOLIO_LOGO from "../../../../public/images/gitfolio-logo.png";
 import Link from "next/link";
 import { useProfileQuery } from "../onboarding/_hooks/useProfileQuery";
 import HeaderPopover from "./header-popover";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import NotificationPopover from "./notification-popover";
 import GithubButton from "@/app/_components/GithubButton";
 import { useAuthStore } from "@/app/store/useAuthStore";
@@ -18,10 +12,6 @@ import { useAuthStore } from "@/app/store/useAuthStore";
 export default function Header() {
   const { data: userProfile } = useProfileQuery();
   const { authenticated } = useAuthStore((state) => state);
-
-  if (!userProfile) {
-    return null;
-  }
 
   return (
     <header className="fixed top-0 left-0 z-50 items-center w-full h-16 px-4 bg-white border-b border-gray-200">

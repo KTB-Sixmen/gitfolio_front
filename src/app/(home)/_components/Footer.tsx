@@ -45,7 +45,7 @@ export function Footer() {
       </div>
       <div className="container mt-6 text-center text-xs leading-loose text-muted-foreground ">
         <p>
-          깃트폴리오 | 대표 : 식스맨 | 개인정보보호책임자 : 식스맨 |
+          깃트폴리오 | 대표 : 강창룡 | 개인정보보호책임자 : 김윤섭 |
           사업자등록번호 : 000-00-0000
         </p>
         <p>경기도 성남시 분당구 판교로660 유스페이스1 4층</p>

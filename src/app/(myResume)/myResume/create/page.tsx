@@ -2,7 +2,7 @@ import Repository from "@/app/(home)/onboarding/repositories/_components/reposit
 
 export default function Page() {
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full p-10 space-y-2">
+    <div className="flex flex-col items-center justify-center w-full p-10 space-y-2">
       <Repository />
     </div>
   );

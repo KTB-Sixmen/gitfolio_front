@@ -11,9 +11,9 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
-import RESUME_TEMPLATE1 from "../../../../../../public/images/resume_template1.png";
-import RESUME_TEMPLATE2 from "../../../../../../public/images/resume_template2.png";
-import RESUME_TEMPLATE3 from "../../../../../../public/images/resume_template3.png";
+import RESUME_TEMPLATE1 from "../../../../../../public/images/resume_basic_template.png";
+import RESUME_TEMPLATE2 from "../../../../../../public/images/resume_star_template.png";
+import RESUME_TEMPLATE3 from "../../../../../../public/images/resume_gitfolio_template.png";
 
 const templateImages = {
   BASIC: RESUME_TEMPLATE1,
@@ -22,7 +22,7 @@ const templateImages = {
 };
 
 const magnifierSize = 200; // 확대 영역의 크기
-const zoomLevel = 2; // 확대 배율
+const zoomLevel = 1.6; // 확대 배율
 
 export default function Repository() {
   const [value, setValue] = useState<Option[]>([]);
@@ -77,7 +77,7 @@ export default function Repository() {
 
   return (
     <div className="flex w-full justify-center gap-4">
-      <div className="flex flex-col h-full space-y-2 overflow-y-auto">
+      <div className="flex flex-col w-1/2 h-full space-y-2 overflow-y-auto">
         <div className="flex flex-col w-full p-4 space-y-4 border-2 rounded-lg">
           <div className="flex flex-col w-full h-full">
             <div className="text-xl font-semibold">깃허브 레파지토리 선택</div>
@@ -150,6 +150,20 @@ export default function Repository() {
             </div>
           </div>
         </div>
+        <div className="text-xs text-gray-400">
+          이력서를 생성함으로써 귀하는 이력서에 포함된 데이터가 자사에 의해 저장
+          및 관리되며, 해당 데이터는{" "}
+          <a
+            href={`${process.env.NEXT_PUBLIC_SERVICE_URL}/terms-of-service`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-blue-400 hover:underline"
+          >
+            개인정보 처리방침 및 이용약관
+          </a>
+          에 따라 사용됨에 동의하는 것으로 간주됩니다. 보다 자세한 내용은
+          개인정보 처리방침 및 이용약관을 참조해 주시기 바랍니다.
+        </div>
         <Button
           onClick={onSubmit}
           className="w-full bg-blue-500 hover:bg-blue-400"
@@ -175,7 +189,7 @@ export default function Repository() {
           />
         </div>
       </div> */}
-      <div className="md:flex hidden h-full">
+      <div className="md:flex hidden h-full w-1/2 justify-center">
         <div
           ref={containerRef}
           className="relative w-[500px] h-full"
@@ -209,15 +223,7 @@ export default function Repository() {
                 backgroundSize: `${500 * zoomLevel}px auto`,
                 backgroundPosition: `-${
                   mousePosition.x * zoomLevel - magnifierSize / 2
-                }px -${mousePosition.y * zoomLevel - magnifierSize / 2}px`,
-                // backgroundPosition: `-${
-                //   mousePosition.x * zoomLevel - magnifierSize / 2
-                // }px -${
-                //   mousePosition.y * zoomLevel -
-                //   magnifierSize / 2 +
-                //   150 +
-                //   window.scrollY
-                // }px`,
+                }px -${mousePosition.y * zoomLevel - magnifierSize / 2 - 50}px`,
               }}
             />
           )}

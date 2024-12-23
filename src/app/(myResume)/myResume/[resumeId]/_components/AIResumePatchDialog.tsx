@@ -31,7 +31,7 @@ export default function AIResumePatchDialog({ open, setOpen, resume }: Props) {
       }),
     );
 
-    mutate({ data: formData });
+    mutate({ data: formData, isAiFixed: "true" });
   };
 
   return (

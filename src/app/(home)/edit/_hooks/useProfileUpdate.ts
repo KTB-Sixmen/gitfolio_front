@@ -24,6 +24,7 @@ export function useProfileUpdate() {
         const errorData = await response.json();
         throw {
           status: response.status,
+          code: errorData.code,
           message: errorData.message ?? "에러가 발생했습니다.",
         };
       }
@@ -36,7 +37,13 @@ export function useProfileUpdate() {
       toast.success("정보 변경에 성공하였습니다.");
     },
     onError: (error: any) => {
-      toast.error(error.message);
+      if (error.code === "ENUM_MAPPING_ERROR") {
+        toast.error(
+          "빈 내용은 들어갈 수 없습니다. 내용을 채우거나 항목을 제거해주세요.",
+        );
+      } else {
+        toast.error(error.message);
+      }
     },
   });
 }

@@ -1,7 +1,5 @@
 import customFetch from "@/app/api/customFetch";
-import { useAuthStore } from "@/app/store/useAuthStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface RequestDto {
@@ -32,6 +30,7 @@ export function useResumeCommentCreate(resumeId: string) {
         const errorData = await response.json();
         throw {
           status: response.status,
+          code: errorData.code,
           message: errorData.message ?? "에러가 발생했습니다.",
         };
       }
@@ -44,7 +43,11 @@ export function useResumeCommentCreate(resumeId: string) {
       });
     },
     onError: (error: any) => {
-      toast.error(error.message);
+      if (error.code === "VALIDATION_ERROR") {
+        toast.error("댓글은 1자 이상 100자 이하로 작성해주세요.");
+      } else {
+        toast.error(error.message);
+      }
     },
   });
 }

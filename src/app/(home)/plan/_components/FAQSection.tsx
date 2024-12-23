@@ -16,7 +16,7 @@ export default function FAQSection() {
   return (
     <div className="z-20 flex flex-col items-center justify-center w-full py-20 bg-white px-14 space-y-2">
       <div className="mb-4 text-2xl font-extrabold text-blue-950">
-        사용권 활용 및 환불안내
+        사용권 활용 및 구독 해지안내
       </div>
       <div className="w-full px-20 text-blue-950">
         <Accordion

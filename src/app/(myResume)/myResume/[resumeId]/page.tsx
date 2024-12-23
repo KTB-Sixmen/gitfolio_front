@@ -37,6 +37,17 @@ type Props = {
   params: { resumeId: string };
 };
 
+// 섹션 id를 찾는 헬퍼 함수
+function findSectionId(element: Node | null): string {
+  let current: HTMLElement | null =
+    element instanceof HTMLElement ? element : element?.parentElement ?? null;
+  while (current && current !== document.body) {
+    if (current.id) return current.id;
+    current = current.parentElement;
+  }
+  return "";
+}
+
 export default function Page({ params }: Props) {
   const resumeId = params.resumeId;
 
@@ -53,8 +64,6 @@ export default function Page({ params }: Props) {
   );
 
   const { data: resume, error } = useMyResumeDetailQuery(resumeId);
-
-  // const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const [requirement, setRequirement] = useState("");
   const [selectedText, setSelectedText] = useState<string>("");
@@ -78,9 +87,7 @@ export default function Page({ params }: Props) {
     deleteResume(id);
   };
 
-  // 마우스를 떼었을 때 발생
   const onMouseUp = useCallback((event: MouseEvent) => {
-    // 이벤트가 팝오버 버튼 내부에서 발생했는지 확인
     if (
       popoverRef.current &&
       popoverRef.current.contains(event.target as Node)
@@ -88,18 +95,46 @@ export default function Page({ params }: Props) {
       return;
     }
 
-    const activeSelection = document.getSelection();
-    const text = activeSelection?.toString();
+    const selection = document.getSelection();
+    const text = selection?.toString();
 
-    if (!activeSelection || !text) {
+    if (!selection || !text) {
       setIsPopOver(false);
       return;
     }
 
+    const resumeContentElement = document.getElementById("resumeContent");
+    if (!resumeContentElement?.contains(selection.anchorNode)) {
+      setIsPopOver(false);
+      setSelectedText("");
+      return;
+    }
+
+    // 시작점 섹션 찾기
+    const startElement =
+      selection.anchorNode instanceof Element
+        ? selection.anchorNode
+        : selection.anchorNode?.parentElement;
+    const endElement =
+      selection.focusNode instanceof Element
+        ? selection.focusNode
+        : selection.focusNode?.parentElement;
+
+    const startSectionId = findSectionId(startElement!);
+    const endSectionId = findSectionId(endElement!);
+
+    if (!startSectionId || !endSectionId || startSectionId !== endSectionId) {
+      // 섹션이 다르다면 드래그해도 popover 표시 안 함
+      setIsPopOver(false);
+      setSelectedText("");
+      toast.error("하나의 올바른 영역 내에서 텍스트를 드래그해 주세요.");
+      return;
+    }
+
+    // 하나의 섹션 안에서만 선택되었다면 기존 로직 실행
     setSelectedText(text);
 
-    const rect = activeSelection.getRangeAt(0).getBoundingClientRect();
-
+    const rect = selection.getRangeAt(0).getBoundingClientRect();
     setIsPopOver(true);
     setPosition({
       x: rect.left + rect.width / 2 - 150,
@@ -153,6 +188,7 @@ export default function Page({ params }: Props) {
     const data = {
       selectedText,
       requirement,
+      // sectionId: selectedSection, // 섹션 ID 포함
     };
 
     mutate(data, {
@@ -188,13 +224,6 @@ export default function Page({ params }: Props) {
         setOpen={setOpen}
         resume={modifiedResume}
       />
-      {/* <MyResumeDeleteModal
-        onDelete={handleDelete}
-        resumeId={resumeId}
-        open={deleteModalOpen}
-        // onOpenChange={setDeleteModalOpen}
-        onOpenChange={(deleteModalOpen) => setDeleteModalOpen(deleteModalOpen)}
-      /> */}
       {isPopOver && (
         <div
           ref={popoverRef}
@@ -252,17 +281,17 @@ export default function Page({ params }: Props) {
                     <DropdownMenuItem>
                       <PdfDownloadButton resume={resume} />
                     </DropdownMenuItem>
-                    {/* <DropdownMenuItem
+                    <DropdownMenuItem
                       onClick={() => router.push(`/myResume/${resumeId}/edit`)}
-                      className="py-4"
+                      className="py-3"
                     >
                       직접 수정
                       <DropdownMenuShortcut>
                         <Pencil size={18} color="green" />
                       </DropdownMenuShortcut>
-                    </DropdownMenuItem> */}
+                    </DropdownMenuItem>
                     <DropdownMenuItem
-                      className="py-4"
+                      className="py-3"
                       onClick={() => {
                         const userConfirmed =
                           confirm("내 이력서를 삭제하시겠습니까?");
@@ -321,7 +350,10 @@ export default function Page({ params }: Props) {
             </div>
 
             {/* 이력서 내용 */}
-            <ResumeDetailContent resume={resume.result} />
+            {/* <ResumeDetailContent resume={resume.result} /> */}
+            <div id="resumeContent">
+              <ResumeDetailContent resume={resume.result} />
+            </div>
 
             <div id="tour1-step3" className="flex w-full">
               <ResumeComment resumeId={resumeId} />

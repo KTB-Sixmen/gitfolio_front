@@ -9,6 +9,9 @@ export default function CommunitySkeleton({ size = 12 }: Props) {
     <div className="space-y-4">
       <Skeleton className="object-cover w-full rounded-lg h-52" />
       <div className="container items-center px-4 py-8 mx-auto space-y-8">
+        <div className="flex w-full justify-end">
+          <Skeleton className="w-48 rounded-full h-12" />
+        </div>
         <div className="flex flex-wrap items-center justify-between gap-2 p-4 bg-white rounded-lg shadow-lg">
           <div className="flex flex-wrap items-center gap-2">
             <Skeleton className="w-10 h-10 rounded-full" />

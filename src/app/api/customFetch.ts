@@ -89,9 +89,6 @@ const customFetch = async (
     return response; // 정상 응답 반환
   } catch (error) {
     Sentry.captureException(error);
-    console.log(error);
-    console.log("catch 에러!");
-    // window.location.href = "/community";
     throw error;
   }
 };

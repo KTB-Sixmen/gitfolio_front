@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,

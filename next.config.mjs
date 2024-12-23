@@ -1,7 +1,14 @@
 import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
+
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
 const nextConfig = {
-  output: 'standalone',  // standalone 모드 활성화
+  output: "standalone", // standalone 모드 활성화
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/i,
@@ -62,6 +69,7 @@ const nextConfig = {
     ];
   },
 };
+// export default bundleAnalyzer(nextConfig);
 
 export default withSentryConfig(nextConfig, {
   // For all available options, see:

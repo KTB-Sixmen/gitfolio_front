@@ -19,14 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import {
-  ArrowDown,
-  ArrowUp,
-  // Linkedin,
-  Plus,
-  PlusCircle,
-  Trash,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, Plus, PlusCircle, Trash } from "lucide-react";
 import { ChangeEvent, useState } from "react";
 import { z } from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -41,7 +34,6 @@ import { OnboardingFormSchema } from "./_lib/schema";
 import { useOnboardingUpdate } from "./_hooks/useOnboardingUpdate";
 import CustomMonthRangePicker from "./_components/custom-month-range-picker";
 import { useProfileQuery } from "./_hooks/useProfileQuery";
-import { useAuthStore } from "@/app/store/useAuthStore";
 import OnboardingSkeleton from "./_components/onboarding-skeleton";
 import { useRepositoryQuery } from "./repositories/_hooks/useRepositoryQuery";
 import { positionTypeMap } from "@/app/types/type";
@@ -62,7 +54,6 @@ export default function Page() {
     mode: "onChange",
   });
 
-  const { accessToken } = useAuthStore((state) => state);
   const { mutate, isPending } = useOnboardingUpdate();
   const { data: userProfile } = useProfileQuery();
 
@@ -140,7 +131,7 @@ export default function Page() {
     );
     formData.append("imageFile", imageFile as Blob);
 
-    mutate({ accessToken: accessToken!, data: formData });
+    mutate({ data: formData });
     // toast.message("You submitted the following values:", {
     //   description: (
     //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
@@ -312,22 +303,6 @@ export default function Page() {
                         </FormItem>
                       )}
                     />
-                    {/* <FormField
-                      control={form.control}
-                      name="position"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>직군</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder="ex) 백엔드, 프론트엔드"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    /> */}
                   </div>
                 </div>
               </div>
