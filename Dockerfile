@@ -1,13 +1,15 @@
 # 기본 Node.js 이미지 사용 - Alpine 기반으로 가벼운 이미지 구성
 FROM node:20.4.0-alpine3.18 AS base
 
+WORKDIR /app
+
 # 환경 변수 파일 복사
 COPY .env /app/.env
 
 # 의존성 설치 단계
 FROM base AS dependencies
 
-WORKDIR /app
+
 
 # package.json 파일 복사
 COPY package*.json ./
