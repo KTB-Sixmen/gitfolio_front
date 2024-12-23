@@ -2,10 +2,10 @@
 FROM node:20.4.0-alpine3.18 AS base
 
 WORKDIR /app
-
+COPY . .
 # 환경 변수 파일 복사
 #COPY .env /app/.env
-COPY .env ./.env
+
 # 의존성 설치 단계
 FROM base AS dependencies
 
@@ -27,7 +27,7 @@ WORKDIR /app
 
 # 의존성 복사
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY . .
+#COPY . .
 
 #나중에 ESLint 로 오류나면 이 코드 추가해줄것
 # CI=false 환경변수 설정 후 빌드 진행
