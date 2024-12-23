@@ -4,8 +4,8 @@ FROM node:20.4.0-alpine3.18 AS base
 WORKDIR /app
 
 # 환경 변수 파일 복사
-COPY .env /app/.env
-
+#COPY .env /app/.env
+COPY .env ./.env
 # 의존성 설치 단계
 FROM base AS dependencies
 
