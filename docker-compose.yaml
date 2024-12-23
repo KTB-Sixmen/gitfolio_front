@@ -4,7 +4,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    image: aida0/gitfolio_front:test
+    image: 727646500036.dkr.ecr.ap-northeast-2.amazonaws.com/gitfolio/front:prod
     ports:
       - target: 3000
         published: 80

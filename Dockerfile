@@ -33,7 +33,7 @@ COPY . .
 #    NEXT_TELEMETRY_DISABLED=1
 
 # Next.js standalone 모드로 빌드
-RUN npm run build CI=false
+RUN npm run build
 
 # 실행 단계
 FROM base AS runner
