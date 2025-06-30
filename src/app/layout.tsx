@@ -23,6 +23,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (process.env.NODE_ENV === "development") {
+    if (typeof window !== "undefined") {
+      const { worker } = require("../mocks/browser");
+      worker.start();
+    }
+  }
+
   return (
     <html lang="en" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className} antialiased`}>
